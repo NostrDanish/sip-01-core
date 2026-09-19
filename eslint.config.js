@@ -42,6 +42,17 @@ export default defineConfig(
       "no-warning-comments": ["error", { terms: ["fixme"] }],
     },
   },
+  {
+    name: "lib/engine-runtime",
+    // The engine runtime module intentionally co-exports the provider
+    // component, the hook, and the defaults (a context module, like
+    // contexts/*.ts) — fast-refresh component-only export rules don't apply
+    // to a library context module.
+    files: ["src/engine/runtime.tsx"],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
   // ─── Architectural boundaries (import direction) ─────────────────────
   // SIP-01-core is layered: protocol → federation/core → engine/ai → app.
   // These rules make the boundaries mechanical, not social. See

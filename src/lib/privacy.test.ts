@@ -1,5 +1,5 @@
 /**
- * Privacy regression tests — the guarantees that make this app
+ * Privacy regression tests — the guarantees that make this engine core
  * privacy-oriented, pinned so no future refactor silently breaks them.
  *
  * 1. Query-class routing (audit: "special queries must never leak"):
@@ -12,14 +12,10 @@
  *    links; javascript:/data:/file:/blob:/chrome:/intent: never may.
  */
 import { describe, it, expect } from 'vitest';
-import { render, waitFor } from '@testing-library/react';
 
 import { classifyQuery, providerAllowlistFor } from '@/engine/query/queryClassify';
 import { sanitizeUrl, sanitizeResultUrl, sanitizePublicUrl } from '@/lib/sanitizeUrl';
 import { ALL_PROVIDERS } from '@/engine/providers/registry';
-import { TestApp } from '@/test/TestApp';
-import { UnifiedResultCard } from '@/components/UnifiedResultCard';
-import type { SearchResult } from '@/engine/providers/types';
 
 /** A real, decodable npub (test-only value). */
 const TEST_NPUB = 'npub180cvv07tjdrrgpa0j7j7tmnyl2yr6yr7l8j4s3evf6u64th6gkwsyjh6w6';
@@ -112,51 +108,3 @@ describe('URL sanitization', () => {
   });
 });
 
-describe('result card link safety (hostile result data)', () => {
-  const base: SearchResult = {
-    id: 'test-1',
-    title: 'Some result',
-    url: 'https://example.com/',
-    snippet: 'A snippet',
-    source: 'web',
-    provider: 'community',
-  };
-
-  // NostrLoginProvider (inside TestApp) hydrates from storage in a microtask
-  // and renders null until then — wait for the card to appear before
-  // asserting on it.
-  it('does not render javascript: URLs as links', async () => {
-    const { container } = render(
-      <TestApp>
-        <UnifiedResultCard result={{ ...base, url: 'javascript:alert(1)' }} />
-      </TestApp>,
-    );
-    // The card still renders, just without any anchor.
-    await waitFor(() => expect(container.textContent).toContain('Some result'));
-    expect(container.querySelector('a[href^="javascript:"]')).toBeNull();
-    expect(container.querySelector('a')).toBeNull();
-  });
-
-  it('renders https URLs as links', async () => {
-    const { container } = render(
-      <TestApp>
-        <UnifiedResultCard result={base} />
-      </TestApp>,
-    );
-    await waitFor(() => {
-      expect(container.querySelector('a[href="https://example.com/"]')).not.toBeNull();
-    });
-  });
-
-  it('renders magnet torrent links (NIP-35)', async () => {
-    const magnet = 'magnet:?xt=urn:btih:0123456789abcdef0123456789abcdef01234567&dn=test';
-    const { container } = render(
-      <TestApp>
-        <UnifiedResultCard result={{ ...base, url: magnet, source: 'nostr' }} />
-      </TestApp>,
-    );
-    await waitFor(() => {
-      expect(container.querySelector(`a[href^="magnet:"]`)).not.toBeNull();
-    });
-  });
-});

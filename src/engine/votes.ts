@@ -58,7 +58,7 @@ export function buildVoteEvent(target: VoteTarget, direction: VoteDirection): {
     content: direction === 1 ? '+' : '-',
     tags: [
       target.tag,
-      ['alt', `Dsearch ${direction === 1 ? 'upvote' : 'downvote'}`],
+      ['alt', `SIP-01 web index ${direction === 1 ? 'upvote' : 'downvote'}`],
     ],
   };
 }
@@ -125,8 +125,10 @@ export function tallyVotes(events: NostrEvent[]): Map<string, VoteTally> {
 /* My votes (localStorage — drives the active button state)            */
 /* ------------------------------------------------------------------ */
 
-const LS_MY_VOTES = 'dsearch:votes';
-const LEGACY_LS_MY_VOTES = 'presearchstr:votes';
+// Local-only UI state (active button state) — renamed dsearch:* → sip01:*
+// with read-through migration (see STORAGE_KEY_RENAMES in storageMigration).
+const LS_MY_VOTES = 'sip01:votes';
+const LEGACY_LS_MY_VOTES = ['dsearch:votes', 'presearchstr:votes'] as const;
 
 function readMyVotes(): Record<string, number> {
   try {

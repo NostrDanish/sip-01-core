@@ -30,7 +30,7 @@ import { documentId, normalizeIndexUrl, parseIndexEvent } from '@/protocol/webIn
 import { getIndexRelayUrls } from '@/lib/appRelays';
 import { queryRelayPool } from '@/lib/searchRelays';
 import { proxiedFetch } from '@/lib/corsProxy';
-import { useAppContext } from '@/hooks/useAppContext';
+import { useEngineRuntime } from '@/engine/runtime';
 import { getEngineConfig } from '@/lib/engineConfig';
 
 export type InstantAnswer =
@@ -269,7 +269,7 @@ export function useInstantAnswer(query: string, enabled: boolean): {
   answer: InstantAnswer | null;
   isLoading: boolean;
 } {
-  const { config } = useAppContext();
+  const runtime = useEngineRuntime();
   const trimmed = query.trim();
   const queryClass = useMemo(() => classifyQuery(trimmed), [trimmed]);
 
@@ -288,7 +288,7 @@ export function useInstantAnswer(query: string, enabled: boolean): {
   }, [trimmed, enabled, queryClass]);
 
   // 4. NIP-05 — resolves name@domain to a profile (direct API: skipped in Privacy Mode).
-  const nip05Enabled = enabled && !calculator && !nip19Answer && queryClass === 'nip05' && !config.privacyMode;
+  const nip05Enabled = enabled && !calculator && !nip19Answer && queryClass === 'nip05' && !runtime.privacyMode;
   const { data: nip05Answer } = useQuery({
     queryKey: ['instant-answer', 'nip05', trimmed],
     queryFn: ({ signal }) => resolveNip05(trimmed, signal),
@@ -316,7 +316,7 @@ export function useInstantAnswer(query: string, enabled: boolean): {
     enabled &&
     !calculator &&
     !nip19Answer &&
-    !config.privacyMode &&
+    !runtime.privacyMode &&
     queryClass === 'text' &&
     answerText.length >= 2 &&
     answerText.length <= 80;

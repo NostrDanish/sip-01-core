@@ -48,8 +48,10 @@ export type { EngineAIStatus } from '@/ai/engineProxy';
 export const ENGINE_AI_BASE: string =
   (import.meta.env.VITE_ENGINE_API_BASE as string | undefined)?.replace(/\/$/, '') || '/api/ai';
 
-const LS_KEY = 'dsearch:ai-config';
-const LEGACY_LS_KEY = 'presearchstr:ai-config';
+// Local-only AI settings — renamed dsearch:* → sip01:* with read-through
+// migration (see STORAGE_KEY_RENAMES in storageMigration).
+const LS_KEY = 'sip01:ai-config';
+const LEGACY_LS_KEY = ['dsearch:ai-config', 'presearchstr:ai-config'] as const;
 
 export interface AIConfig {
   /** Master switch — AI answers only run when enabled. */

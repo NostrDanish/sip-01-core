@@ -17,22 +17,43 @@ import {
   ENGINE_AI_BASE,
   type EngineAIStatus,
 } from './aiConfig';
-import { configureEngine, resetEngineConfig } from '@/lib/engineConfig';
-import { ENGINE_PROFILE } from '@/app/profile';
+import { configureEngine, resetEngineConfig, type EngineRuntimeConfig } from '@/lib/engineConfig';
 
-/** The Dsearch profile carries the community free tier (its public key). */
-const COMMUNITY = ENGINE_PROFILE.ai.community!;
-
-/** Mirror the app's bootstrap (src/App.tsx): the host injects its profile. */
-function configureTestEngine(): void {
-  configureEngine({
-    id: ENGINE_PROFILE.id,
-    search: {
-      brave: ENGINE_PROFILE.search.brave,
-      indexerSource: ENGINE_PROFILE.search.indexerSource,
+/**
+ * Test-local host profile fixture — the values the deleted Dsearch app
+ * profile (src/app/profile.ts) used to inject through configureEngine(),
+ * copied verbatim so the precedence semantics below are unchanged. The
+ * community tier's shared key is public BY DESIGN (rate-limited; it used to
+ * ship in the app's bundle).
+ */
+const TEST_ENGINE_PROFILE: EngineRuntimeConfig = {
+  id: 'dsearch',
+  search: {
+    brave: true,
+    indexerSource: 'dsearch-web/1',
+  },
+  ai: {
+    enabledDefault: false,
+    providerId: 'ppq',
+    providerName: 'PPQ.ai',
+    endpoint: 'https://api.ppq.ai/v1',
+    model: 'auto',
+    systemPrompt: 'You are the Dsearch answer engine — a synthesis layer over a decentralized search network.',
+    community: {
+      providerId: 'ppq',
+      endpoint: 'https://api.ppq.ai/v1',
+      apiKey: 'sk-VPVVNlf79DvGjUfjjrHeFT',
+      model: 'qwen/qwen-2.5-7b-instruct',
     },
-    ai: ENGINE_PROFILE.ai,
-  });
+  },
+};
+
+/** The host profile carries the community free tier (its public key). */
+const COMMUNITY = TEST_ENGINE_PROFILE.ai.community!;
+
+/** Mirror a host's bootstrap: the host injects its profile at startup. */
+function configureTestEngine(): void {
+  configureEngine(TEST_ENGINE_PROFILE);
 }
 
 const ENGINE_ON: EngineAIStatus = {
@@ -90,15 +111,8 @@ describe('resolveAIConfig precedence (configured host)', () => {
   it('host profile without a community tier → AI unavailable (no baked-in key)', () => {
     // The generic layer holds no credentials: a host that injects a profile
     // without `ai.community` gets no community tier.
-    const { community: _community, ...aiNoCommunity } = ENGINE_PROFILE.ai;
-    configureEngine({
-      id: ENGINE_PROFILE.id,
-      search: {
-        brave: ENGINE_PROFILE.search.brave,
-        indexerSource: ENGINE_PROFILE.search.indexerSource,
-      },
-      ai: aiNoCommunity,
-    });
+    const { community: _community, ...aiNoCommunity } = TEST_ENGINE_PROFILE.ai;
+    configureEngine({ ...TEST_ENGINE_PROFILE, ai: aiNoCommunity });
     const r = resolveAIConfig({ ...getDefaultAIConfig(), apiKey: '' }, ENGINE_OFF);
     expect(r.tier).toBe('unavailable');
     expect(r.apiKey).toBe('');

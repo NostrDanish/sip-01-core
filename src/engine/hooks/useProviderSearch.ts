@@ -18,10 +18,9 @@ import { classifyQuery, providerAllowlistFor } from '@/engine/query/queryClassif
 import { parseQuery } from '@/engine/query/queryParser';
 import { applyHardConstraints } from '@/engine/query/queryEngine';
 import { sortByQueryRelevance } from '@/engine/query/resultRank';
-import { isHiddenResult } from '@/app/moderation';
+import { isHiddenResult } from '@/engine/moderation';
 import { useSearchIndexer } from '@/engine/hooks/useSearchIndexer';
-import { useModerationSet } from '@/app/hooks/useModeration';
-import { useAppContext } from '@/hooks/useAppContext';
+import { useEngineRuntime } from '@/engine/runtime';
 
 export type ProviderStatus = 'idle' | 'searching' | 'done' | 'error';
 
@@ -74,23 +73,23 @@ export function useProviderSearch({
   enabled = true,
 }: UseProviderSearchOptions): UseProviderSearchResult {
   const queryClient = useQueryClient();
-  const { config } = useAppContext();
-  const privacyMode = config.privacyMode;
-  // Result language filter (Settings → General) — forwarded to every
-  // provider; engines that support it filter server-side.
-  const languageFilter = config.languageFilter;
+  const runtime = useEngineRuntime();
+  const privacyMode = runtime.privacyMode;
+  // Result language filter — forwarded to every provider; engines that
+  // support it filter server-side.
+  const languageFilter = runtime.languageFilter;
   const activeProviders = useMemo(() => {
     let providers = getProvidersForPrivacy(source, privacyMode);
-    // User-disabled engines never run (Settings → Search Engines).
-    if (config.disabledProviders.length > 0) {
-      providers = providers.filter((p) => !config.disabledProviders.includes(p.id));
+    // Host-disabled engines never run.
+    if (runtime.disabledProviders.length > 0) {
+      providers = providers.filter((p) => !runtime.disabledProviders.includes(p.id));
     }
     // Skip providers that can't possibly answer this query class
     // (a bare npub to SearXNG is pure waste + a privacy leak).
     const allowlist = providerAllowlistFor(classifyQuery(query));
     if (allowlist) providers = providers.filter((p) => allowlist.has(p.id));
     return providers;
-  }, [source, privacyMode, query, config.disabledProviders]);
+  }, [source, privacyMode, query, runtime.disabledProviders]);
   /**
    * The parsed structured query — computed once per query string (memoized
    * in the parser too). Providers get it for operator translation/local
@@ -104,8 +103,8 @@ export function useProviderSearch({
     return getProvidersForSource(source).filter((p) => !active.has(p.id));
   }, [source, privacyMode, activeProviders]);
   const { indexResults } = useSearchIndexer();
-  // Owner-signed moderation list — hidden URLs/event ids are filtered for everyone.
-  const moderationSet = useModerationSet();
+  // Host-supplied moderation set — hidden URLs/event ids are filtered out.
+  const moderationSet = runtime.moderation;
 
   // Provider states tracked outside React Query for per-provider granularity.
   const [providerStates, setProviderStates] = useState<Map<string, ProviderState>>(new Map());

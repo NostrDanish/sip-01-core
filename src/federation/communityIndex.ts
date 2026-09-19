@@ -73,7 +73,7 @@ export async function buildSubmissionEvent(
       ['title', input.title.trim()],
       ['url', input.url.trim()],
       ['type', type],
-      ['alt', `Dsearch community index submission: ${input.title.trim()}`],
+      ['alt', `SIP-01 web index community submission: ${input.title.trim()}`],
     ],
   };
 }

@@ -22,14 +22,14 @@ import {
   type InstanceState,
   type PoolInstance,
 } from '@/engine/providers/searxngInstances';
-import { useAppContext } from '@/hooks/useAppContext';
+import { useEngineRuntime } from '@/engine/runtime';
 
 export function useSearxngInstances() {
   const queryClient = useQueryClient();
-  const { config } = useAppContext();
+  const runtime = useEngineRuntime();
   const [refreshing, setRefreshing] = useState(false);
   const [discoveryOn, setDiscoveryOn] = useState(() => isDiscoveryEnabled());
-  const languageFilter = config.languageFilter;
+  const languageFilter = runtime.languageFilter;
 
   const { data: pool = [] } = useQuery<PoolInstance[]>({
     queryKey: ['searxng-instance-pool', languageFilter],

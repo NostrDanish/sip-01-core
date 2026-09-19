@@ -7,8 +7,10 @@
  */
 import { readStoredWithLegacy, writeStoredCanonical } from '@/lib/storageMigration';
 
-const LS_BRAVE_KEY = 'dsearch:brave-api-key';
-const LEGACY_LS_BRAVE_KEY = 'presearchstr:brave-api-key';
+// Local-only BYOK credential — renamed dsearch:* → sip01:* with
+// read-through migration (see STORAGE_KEY_RENAMES in storageMigration).
+const LS_BRAVE_KEY = 'sip01:brave-api-key';
+const LEGACY_LS_BRAVE_KEY = ['dsearch:brave-api-key', 'presearchstr:brave-api-key'] as const;
 
 /** Read the user's Brave API key (empty when unset). */
 export function getBraveApiKey(): string {

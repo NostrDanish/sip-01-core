@@ -1,22 +1,21 @@
 /**
  * Vote hooks — 👍/👎 tallies and publishing (NIP-25, kind 7).
  *
- * Identity model (user's choice, Settings → Auto Indexer):
+ * Identity model (host's choice, via EngineRuntime.voteWithIdentity):
  *   - Anonymous (default): signed by this device's built-in SIP-01
  *     indexing identity — pseudonymous, per-device, never the user's npub.
- *   - Attributable: signed with the logged-in Nostr key (like staking).
+ *   - Attributable: signed with the host's logged-in user signer
+ *     (EngineRuntime.userSigner — like staking).
  */
 import { useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { finalizeEvent } from 'nostr-tools/pure';
 import { type NostrEvent, type NostrFilter } from '@nostrify/nostrify';
 
-import { queryRelayPool, getSearchRelay } from '@/lib/searchRelays';
+import { queryRelayPool, publishToRelayPool, getSearchRelay } from '@/lib/searchRelays';
 import { getIndexRelayUrls, getSearchRelayUrls } from '@/lib/appRelays';
 import { getIndexerIdentity } from '@/protocol/indexerIdentity';
-import { useCurrentUser } from '@/hooks/useCurrentUser';
-import { useNostrPublish } from '@/hooks/useNostrPublish';
-import { useAppContext } from '@/hooks/useAppContext';
+import { useEngineRuntime } from '@/engine/runtime';
 import {
   VOTE_KIND,
   buildVoteEvent,
@@ -76,14 +75,12 @@ export function useVoteCounts(targetKeys: string[]) {
   });
 }
 
-/** Publish votes. Anonymous (device identity) by default, npub when toggled. */
+/** Publish votes. Anonymous (device identity) by default, user identity when toggled. */
 export function useVoteActions() {
-  const { user } = useCurrentUser();
-  const { mutateAsync: createEvent } = useNostrPublish();
-  const { config } = useAppContext();
+  const runtime = useEngineRuntime();
   const queryClient = useQueryClient();
 
-  const asIdentity = config.voteWithIdentity;
+  const asIdentity = runtime.voteWithIdentity;
 
   const vote = useCallback(async (
     result: { url: string; nostrEvent?: { id: string } },
@@ -95,9 +92,16 @@ export function useVoteActions() {
     const template = buildVoteEvent(target, direction);
 
     if (asIdentity) {
-      // Attributable: the user's own Nostr key (like keyword staking).
-      if (!user) throw new Error('Log in to vote with your npub (or turn off "Vote with my npub")');
-      await createEvent(template);
+      // Attributable: the host's logged-in user identity (like keyword staking).
+      const signer = runtime.userSigner;
+      if (!signer) throw new Error('voteWithIdentity requires EngineRuntime.userSigner');
+      const signedEvent = await signer.signEvent({
+        kind: template.kind,
+        created_at: Math.floor(Date.now() / 1000),
+        tags: template.tags,
+        content: template.content,
+      });
+      await publishToRelayPool(getIndexRelayUrls(), signedEvent, 5000);
     } else {
       // Anonymous: this device's built-in indexing identity, direct to the
       // index relays (never the user's key, never the app relays' auth).
@@ -123,7 +127,7 @@ export function useVoteActions() {
     setMyVote(target.key, direction);
     void queryClient.invalidateQueries({ queryKey: ['vote-tallies'] });
     return target;
-  }, [asIdentity, user, createEvent, queryClient]);
+  }, [asIdentity, runtime.userSigner, queryClient]);
 
-  return { vote, asIdentity, canVoteWithIdentity: !!user };
+  return { vote, asIdentity, canVoteWithIdentity: !!runtime.userSigner };
 }

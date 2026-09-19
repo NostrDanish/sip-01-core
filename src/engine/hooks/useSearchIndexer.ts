@@ -63,7 +63,7 @@ import {
 } from '@/federation/termSignals';
 import { getIndexRelayUrls } from '@/lib/appRelays';
 import { queryRelayPool, publishToRelayPool } from '@/lib/searchRelays';
-import { useAppContext } from '@/hooks/useAppContext';
+import { useEngineRuntime } from '@/engine/runtime';
 
 /** Max document observations published per search. */
 const MAX_OBSERVATIONS_PER_SEARCH = 10;
@@ -78,8 +78,8 @@ async function publishEvent(signedEvent: NostrEvent) {
  * Returns a function to call after search completes.
  */
 export function useSearchIndexer() {
-  const { config } = useAppContext();
-  const autoIndex = config.autoIndex;
+  const runtime = useEngineRuntime();
+  const autoIndex = runtime.autoIndex;
   // Track which URLs (documents) / terms (hashed signals) we've indexed this session.
   const indexedDocsRef = useRef(new Set<string>());
   const signaledTermsRef = useRef(new Set<string>());

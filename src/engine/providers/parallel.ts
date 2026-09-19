@@ -21,8 +21,10 @@ import { proxiedFetch } from '@/lib/corsProxy';
 import { textOnly, toEngineQuery } from '@/engine/query/queryParser';
 import { readStoredWithLegacy, writeStoredCanonical } from '@/lib/storageMigration';
 
-const LS_PARALLEL_KEY = 'dsearch:parallel-api-key';
-const LEGACY_LS_PARALLEL_KEY = 'presearchstr:parallel-api-key';
+// Local-only BYOK credential — renamed dsearch:* → sip01:* with
+// read-through migration (see STORAGE_KEY_RENAMES in storageMigration).
+const LS_PARALLEL_KEY = 'sip01:parallel-api-key';
+const LEGACY_LS_PARALLEL_KEY = ['dsearch:parallel-api-key', 'presearchstr:parallel-api-key'] as const;
 const API_URL = 'https://api.parallel.ai/v1/search';
 
 /** Read the user's Parallel API key (empty when unset). */
