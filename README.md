@@ -125,7 +125,7 @@ index. Same kinds, same tags, different signers. A search on either app warms th
 
 ## What You Can Do Here
 
-- **Search** — the engine: SIP-01 community index first, then 18 parallel providers (Nostr NIP-50,
+- **Search** — the engine: SIP-01 community index first, then 15 parallel providers (Nostr NIP-50,
   SearXNG, DuckDuckGo, Brave BYOK, Hacker News, wiki, git, Tor…). Keyword staking with your Nostr key.
 - **Network** (`/network`) — live view: index relays, crawler heartbeats, latest observations.
 - **Build** (`/build`) — run a crawler (Crawlstr), an indexer (Indexstr), or a SIP relay.

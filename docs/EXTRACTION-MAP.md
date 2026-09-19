@@ -2,7 +2,8 @@
 
 Status of the staged extraction, and the exact remaining moves. Rule of the
 project: **MOVE → ADAPT → TEST**, never rewrite-and-hope. Coupling inversions
-come before physical moves; every phase lands green.
+come before physical moves, and every phase must leave the test gate green
+(`npm run test`) before it lands.
 
 ## Completed
 

@@ -50,7 +50,7 @@ features while the wire format (`v: "1"`) stays frozen.
 src/protocol/          SIP-01 v1.2 reference implementation — byte-critical
     webIndex.ts            kind 39697 build/parse/verify, §7 normalization, §3/§8 hashing
     indexerIdentity.ts     §14 per-device pseudonymous indexer keys
-    *.test.ts              §13 spec test vectors (32 tests)
+    *.test.ts              §13 spec test vectors + identity tests (45 tests)
 
 src/lib/               contracts + shared machinery (the future "core" packages)
     providers/types.ts     THE provider contract: SearchProvider / SearchResult /
