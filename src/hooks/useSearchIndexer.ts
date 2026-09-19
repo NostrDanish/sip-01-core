@@ -48,7 +48,7 @@ import { INDEX_KIND, normalizeQuery } from '@/lib/searchIndex';
 import { getIndexerIdentity } from '@/protocol/indexerIdentity';
 import { buildIndexEvent, normalizeIndexUrl } from '@/protocol/webIndex';
 import { observationFromResult } from '@/lib/engine/observation';
-import { ENGINE_PROFILE } from '@/lib/engine/profile';
+import { getEngineConfig } from '@/lib/engineConfig';
 import { classifyQuery } from '@/lib/queryClassify';
 import {
   TERM_SIGNAL_D_PREFIX,
@@ -109,7 +109,9 @@ export function useSearchIndexer() {
         if (!normalized || seen.has(normalized) || indexedDocsRef.current.has(normalized)) continue;
         seen.add(normalized);
 
-        const input = observationFromResult(result, ENGINE_PROFILE.search.indexerSource);
+        // Host engine's indexer id, injected via the engineConfig seam at
+        // bootstrap — read at call time, never imported from the app profile.
+        const input = observationFromResult(result, getEngineConfig().search.indexerSource);
         if (!input) continue;
         observations.push(input);
         if (observations.length >= MAX_OBSERVATIONS_PER_SEARCH) break;
