@@ -141,6 +141,109 @@ export default defineConfig(
     },
   },
   {
+    name: "boundaries/engine-hooks",
+    // The engine hooks (orchestration + index/trending/stakes reads) get the
+    // same constraints as the engine/AI library layer: no UI, no app
+    // profile, no app control plane — host identity arrives via the
+    // engineConfig seam. `@/hooks/**` is NOT banned here: hooks legitimately
+    // compose other hooks (useAppContext & co.).
+    // useProviderSearch additionally imports the app moderation set — the
+    // documented cross-layer edge (docs/EXTRACTION-MAP.md, "Known
+    // cross-layer edge"); it stays covered here for profile/control-plane
+    // bans while the moderation seam is deferred to the apps/dsearch split.
+    files: [
+      "src/hooks/useProviderSearch.ts",
+      "src/hooks/useSearchIndexer.ts",
+      "src/hooks/useInstantAnswer.ts",
+      "src/hooks/useTrendingTerms.ts",
+      "src/hooks/useRecentIndexedDocs.ts",
+      "src/hooks/useRecentStakes.ts",
+      "src/hooks/useMyNode.ts",
+      "src/hooks/useNetworkStats.ts",
+      "src/hooks/useVotes.ts",
+      "src/hooks/useRelayDiscovery.ts",
+      "src/hooks/useSearchRelayPool.ts",
+      "src/hooks/useSearxngInstances.ts",
+    ],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "@/lib/engine/profile",
+              message:
+                "Engine hooks must not import the app profile. Read host config via getEngineConfig() (src/lib/engineConfig.ts).",
+            },
+            {
+              name: "@/lib/dsearchProtocol",
+              message:
+                "Engine hooks must not import an application's control plane (trust root, roles, namespaces).",
+            },
+          ],
+          patterns: [
+            {
+              group: ["@/components/**"],
+              message: "Engine hooks must not import UI components.",
+            },
+            {
+              group: ["@/pages/**"],
+              message: "Engine hooks must not import pages.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    name: "boundaries/core-contracts",
+    // Core contracts & infrastructure (PACKAGE_BOUNDARIES.md): generic relay
+    // pool/proxy machinery every layer builds on. Adds the app-profile /
+    // app-control-plane ban on top of the general lib-no-ui block (whose
+    // rule config this replaces for these files — hence the repeated UI
+    // bans).
+    files: [
+      "src/lib/appRelays.ts",
+      "src/lib/relayDiscovery.ts",
+      "src/lib/searchRelays.ts",
+      "src/lib/corsProxy.ts",
+    ],
+    ignores: ["**/*.test.ts", "**/*.test.tsx"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "@/lib/engine/profile",
+              message:
+                "Core contracts must not import the app profile. Host defaults arrive via the engineConfig seam or explicit parameters.",
+            },
+            {
+              name: "@/lib/dsearchProtocol",
+              message:
+                "Core contracts must not import an application's control plane (trust root, roles, namespaces).",
+            },
+          ],
+          patterns: [
+            {
+              group: ["@/components/**"],
+              message: "Core contracts must not import UI components.",
+            },
+            {
+              group: ["@/pages/**"],
+              message: "Core contracts must not import pages.",
+            },
+            {
+              group: ["@/hooks/**"],
+              message: "Core contracts must not import React hooks (hooks consume this layer, not vice versa).",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     name: "boundaries/protocol",
     // The SIP-01 reference layer: byte-critical protocol code. It must never
     // import application code — only npm packages and relative modules.
