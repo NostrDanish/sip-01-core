@@ -7,7 +7,7 @@
  * client-side resolved config (the built-in tier's shared key is public
  * and rate-limited BY DESIGN — a different, disclosed tradeoff).
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 import {
   resolveAIConfig,
@@ -20,6 +20,20 @@ import {
   COMMUNITY_AI_MODEL,
   type EngineAIStatus,
 } from './aiConfig';
+import { configureEngine, resetEngineConfig } from './engineConfig';
+import { ENGINE_PROFILE } from './engine/profile';
+
+/** Mirror the app's bootstrap (src/App.tsx): the host injects its profile. */
+function configureTestEngine(): void {
+  configureEngine({
+    id: ENGINE_PROFILE.id,
+    search: {
+      brave: ENGINE_PROFILE.search.brave,
+      indexerSource: ENGINE_PROFILE.search.indexerSource,
+    },
+    ai: ENGINE_PROFILE.ai,
+  });
+}
 
 const ENGINE_ON: EngineAIStatus = {
   configured: true,
@@ -32,7 +46,10 @@ const ENGINE_ON: EngineAIStatus = {
 
 const ENGINE_OFF: EngineAIStatus = { configured: false, enabled: false };
 
-describe('resolveAIConfig precedence', () => {
+describe('resolveAIConfig precedence (configured host)', () => {
+  beforeEach(configureTestEngine);
+  afterEach(resetEngineConfig);
+
   it('1. no engine + no user key → built-in free tier (locked provider+model)', () => {
     const r = resolveAIConfig({ ...getDefaultAIConfig(), apiKey: '' }, ENGINE_OFF);
     expect(r.tier).toBe('community');
@@ -88,7 +105,26 @@ describe('resolveAIConfig precedence', () => {
   });
 });
 
+describe('unconfigured engine (neutral defaults)', () => {
+  afterEach(resetEngineConfig);
+
+  it('no host profile → keyless custom provider, never a baked-in tier', () => {
+    // Without configureEngine() the engine is brand-free: providerId
+    // 'custom' (requiresKey: false) resolves to the keyless tier, and the
+    // host's community/engine tiers only appear once a profile is injected.
+    const r = resolveAIConfig({ ...getDefaultAIConfig(), apiKey: '' }, ENGINE_ON);
+    expect(r.tier).toBe('keyless');
+
+    configureTestEngine();
+    const hosted = resolveAIConfig({ ...getDefaultAIConfig(), apiKey: '' }, ENGINE_ON);
+    expect(hosted.tier).toBe('engine');
+  });
+});
+
 describe('secrecy invariants', () => {
+  beforeEach(configureTestEngine);
+  afterEach(resetEngineConfig);
+
   it('5/6. the engine tier never puts any key into client config', () => {
     const r = resolveAIConfig({ ...getDefaultAIConfig(), apiKey: '' }, ENGINE_ON);
     expect(r.apiKey).toBe('');

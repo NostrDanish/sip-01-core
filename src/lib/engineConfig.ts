@@ -86,3 +86,12 @@ export function configureEngine(config: EngineRuntimeConfig): void {
 export function getEngineConfig(): EngineRuntimeConfig {
   return runtimeConfig;
 }
+
+/**
+ * Restore the neutral (unconfigured) defaults. Test helper: suites that
+ * call configureEngine() must reset afterwards so module state does not
+ * leak between test files sharing a worker.
+ */
+export function resetEngineConfig(): void {
+  runtimeConfig = NEUTRAL_CONFIG;
+}
