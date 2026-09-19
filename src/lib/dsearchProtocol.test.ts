@@ -188,7 +188,9 @@ describe('moderation label namespaces', () => {
     const json = JSON.stringify(template);
     expect(json).toContain('dsearch.moderation');
     expect(json).not.toContain('0xsearchstr');
-    expect(template!.tags.some(([n, v]) => n === 'r' && v === 'example.com/page')).toBe(true);
+    // The r value is the full normalized URL (scheme included) — that is
+    // exactly what isHiddenResult matches against normalizeIndexUrl().
+    expect(template!.tags.some(([n, v]) => n === 'r' && v === 'https://example.com/page')).toBe(true);
     expect(template!.tags.some(([n]) => n === 'u')).toBe(false);
   });
 
