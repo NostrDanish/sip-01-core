@@ -17,6 +17,9 @@ come before physical moves, and every phase must leave the test gate green
 | 2d | `5091af8` | `createProviderRegistry()` — composable provider catalog (the open/closed plugin seam) |
 | 2e | `77978b8` | `src/lib/engineConfig.ts` seam (`configureEngine`/`getEngineConfig`); engine/AI no longer import the app profile; worker injects `ENGINE_PROFILE.ai` into the isomorphic proxy |
 | 3-M1 | `55c579b` | Physical home for the protocol layer: `src/protocol/{webIndex,indexerIdentity}.ts` (+tests) |
+| 3-M2 | `5c55bc4` | Physical home for the federation layer: `src/lib/{searchIndex,communityIndex,keywordStakes,termSignals}.ts` (+tests) → `src/federation/` |
+| 3-M3 | `079f85c` | `src/lib/providers/` → `src/engine/providers/`; `src/lib/searxngInstances.ts` → `src/engine/providers/` |
+| 3-M4 | `ebbb3ae` | Query/rank stack → `src/engine/query/` (`queryParser`, `queryEngine`, `queryMatch`, `queryClassify`, `resultRank`, `calculator` +tests); `src/lib/votes.ts` → `src/engine/` |
 
 ## Staged physical moves (next phases)
 
