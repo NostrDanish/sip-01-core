@@ -46,7 +46,9 @@ function hexToBytes(hex: string): Uint8Array {
 import type { SearchResult } from '@/lib/providers/types';
 import { INDEX_KIND, normalizeQuery } from '@/lib/searchIndex';
 import { getIndexerIdentity } from '@/lib/indexerIdentity';
-import { buildIndexEvent, normalizeIndexUrl, observationFromResult } from '@/lib/webIndex';
+import { buildIndexEvent, normalizeIndexUrl } from '@/lib/webIndex';
+import { observationFromResult } from '@/lib/engine/observation';
+import { ENGINE_PROFILE } from '@/lib/engine/profile';
 import { classifyQuery } from '@/lib/queryClassify';
 import {
   TERM_SIGNAL_D_PREFIX,
@@ -107,7 +109,7 @@ export function useSearchIndexer() {
         if (!normalized || seen.has(normalized) || indexedDocsRef.current.has(normalized)) continue;
         seen.add(normalized);
 
-        const input = observationFromResult(result);
+        const input = observationFromResult(result, ENGINE_PROFILE.search.indexerSource);
         if (!input) continue;
         observations.push(input);
         if (observations.length >= MAX_OBSERVATIONS_PER_SEARCH) break;

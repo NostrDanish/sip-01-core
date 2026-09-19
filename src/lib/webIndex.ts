@@ -20,9 +20,6 @@
  */
 import type { NostrEvent } from '@nostrify/nostrify';
 
-import { ENGINE_PROFILE } from '@/lib/engine/profile';
-import type { SearchResult } from '@/lib/providers/types';
-
 /** Web Index Observation kind (addressable). Draft allocation — see spec §2. */
 export const WEB_INDEX_KIND = 39697;
 
@@ -357,18 +354,6 @@ export async function verifyObservation(obs: IndexObservation): Promise<boolean>
   return true;
 }
 
-/** Convert a search result into an observation input (for auto-indexing). */
-export function observationFromResult(result: SearchResult): IndexObservationInput | null {
-  if (!result.url || !/^https?:\/\//i.test(result.url)) return null;
-  if (!result.title?.trim()) return null;
-  return {
-    url: result.url,
-    title: result.title,
-    description: result.snippet,
-    image: result.thumbnail,
-    tags: result.tags,
-    published: result.timestamp,
-    // Attributed to this branded engine — see ENGINE_PROFILE.
-    source: ENGINE_PROFILE.search.indexerSource,
-  };
-}
+// NOTE: the SearchResult → IndexObservationInput adapter lives in
+// src/lib/engine/observation.ts (engine glue). This module is the protocol
+// reference implementation and imports nothing from the application layer.

@@ -8,7 +8,6 @@ import {
   contentHash,
   documentId,
   normalizeIndexUrl,
-  observationFromResult,
   parseIndexEvent,
   verifyObservation,
 } from './webIndex';
@@ -374,22 +373,5 @@ describe('verifyObservation (spec §18 step 2)', () => {
     const obs = await makeObservation();
     const tampered = { ...obs, contentHash: '0'.repeat(64) };
     expect(await verifyObservation(tampered)).toBe(false);
-  });
-});
-
-describe('observationFromResult', () => {
-  it('converts web results and skips nostr-internal ones', () => {
-    const web = observationFromResult({
-      id: 'x', title: 'Page', url: 'https://example.com/', snippet: 'S',
-      source: 'web', provider: 'example-provider',
-    });
-    expect(web).not.toBeNull();
-    expect(web!.source).toBe('dsearch-web/1');
-
-    const internal = observationFromResult({
-      id: 'x', title: 'Note', url: '/note1abc', snippet: 'S',
-      source: 'nostr', provider: 'nostr',
-    });
-    expect(internal).toBeNull();
   });
 });
