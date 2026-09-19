@@ -28,12 +28,14 @@ come before physical moves, and every phase must leave the test gate green
 
 ## Staged physical moves (next phases)
 
+**None — the extraction program is CLOSED.**
+
 | # | Move | Importer rewrite |
 |---|---|---|
-| M10 | decide `backend/`'s home (candidate: separate legacy repo) | none (disconnected) |
+| M10 | `backend/` home decided per owner decision: **removed from this repo**; the legacy self-hosted stack (crawlers, NIP-50 relay, abuse API) belongs to separate infrastructure repos | none (was disconnected) |
+| FINAL | **Apps split complete.** The Dsearch application plane (`src/app/`, pages, components, hooks, contexts, app shell, brand assets, deploy infra) was removed from this repo; sip-01-core now ships as a standalone library (`src/index.ts` barrel, vite lib build). The `useProviderSearch` → app-moderation cross-layer edge (below) is **RESOLVED** by the `EngineRuntime.moderation` injection point (`src/engine/runtime.tsx` + the pure `src/engine/moderation.ts`); the 4 `dsearch:*` engine/AI localStorage keys were renamed to `sip01:*` with read-through migration (`STORAGE_KEY_RENAMES`); the Dsearch-branded `alt` strings on vote/submission events were reworded to neutral "SIP-01 web index" style (descriptive-only tags, wire shape unchanged) | all engine hooks → `useEngineRuntime()` |
 
-The `boundaries/*` globs in `eslint.config.js` already track the post-M8
-paths. Consider npm workspaces (`packages/*`) **only when npm publishing
+Consider npm workspaces (`packages/*`) **only when npm publishing
 is actually needed** — the single-build layout is intentional until then.
 
 ## Remaining debt
@@ -41,29 +43,29 @@ is actually needed** — the single-build layout is intentional until then.
 Debt that survives the completed moves, recorded so it is not rediscovered
 the hard way:
 
-- **4 per-feature `dsearch:*` localStorage keys inside the engine/AI layers**
-  (they should read host key names from a seam like `relayConfig` does):
-  `src/engine/votes.ts` (`dsearch:votes`),
-  `src/engine/providers/braveKey.ts` (`dsearch:brave-api-key`),
-  `src/engine/providers/parallel.ts` (`dsearch:parallel-api-key`),
-  `src/ai/aiConfig.ts` (`dsearch:ai-config`).
-- **Dsearch-branded `alt` strings on shared federation events** (cosmetic,
-  but the strings ride the shared `0xsearchstr:*` contract):
-  `src/engine/votes.ts` (vote events),
-  `src/federation/communityIndex.ts` (submission events).
-- **M10: `backend/` decision** — the legacy 0xSearchstr-era self-hosted
-  stack (Meilisearch + crawlers + NIP-50 relay proxy) is disconnected from
-  the app build; keep, extract to its own repo, or drop. Staged above.
 - **No LICENSE file** — without one, no reuse rights are granted by
   default; a licensing decision is required before third-party
   reuse/distribution. See the README licensing note.
 
-## Known cross-layer edge (accepted, documented)
+Resolved by the final phase (kept for the record):
 
-`useProviderSearch` (engine orchestrator) reads the owner-signed moderation
-set via `useModeration` (app control plane). Resolving this cleanly requires a
-moderation-provider injection point in the engine config seam. Deferred to the
-`apps/dsearch` split — do not hack it during the mechanical moves.
+- ~~4 per-feature `dsearch:*` localStorage keys inside the engine/AI
+  layers~~ → renamed to `sip01:*`; old keys migrate on first read via
+  `STORAGE_KEY_RENAMES` in `src/lib/storageMigration.ts`.
+- ~~Dsearch-branded `alt` strings on vote/submission events~~ → reworded to
+  neutral "SIP-01 web index" style (`alt` is descriptive-only; no tag or
+  content shape changed).
+- ~~M10 `backend/` decision~~ → owner decision: removed; infrastructure
+  lives in separate repos.
+
+## Known cross-layer edge — RESOLVED
+
+`useProviderSearch` (engine orchestrator) used to read the owner-signed
+moderation set via `useModeration` (app control plane). RESOLVED in the
+final phase: the pure moderation matcher moved to `src/engine/moderation.ts`
+and the engine hooks consume a host-injected `EngineRuntime.moderation` set
+(`src/engine/runtime.tsx`). The core ships no trust anchors; hosts build
+their moderation set from their own trust policy.
 
 ## Verification obligations per move
 

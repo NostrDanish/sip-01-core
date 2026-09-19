@@ -1,20 +1,20 @@
-# SIP-01-core Architecture
+# sip-01-core Architecture
 
-**One sentence:** SIP-01-core is the reusable reference implementation of the
+**One sentence:** sip-01-core is the reusable reference implementation of the
 [SIP-01 Search Index Protocol](https://github.com/NostrDanish/SIP-01) — the
 protocol *software* layer between the specification and any search engine built
-on it.
+on it, packaged as a library.
 
 ```
 github.com/NostrDanish/SIP-01     ← THE PROTOCOL (spec, wire format, test vectors)
                   │
                   ▼
-sip-01-core  (THIS REPO)          ← reference implementation + engine core
+sip-01-core  (THIS REPO)          ← reference implementation + engine core (library)
                   │
                   ▼
         ┌─────────┼──────────┬─────────────┐
         ▼         ▼          ▼             ▼
-     Dsearch   Savedd   0xSearchstr   your engine   ← APPLICATIONS
+     Dsearch   Savedd   0xSearchstr   your engine   ← APPLICATIONS (separate repos)
 ```
 
 These are three different levels. Do not confuse them:
@@ -22,7 +22,7 @@ These are three different levels. Do not confuse them:
 | Level | Lives in | Changes when |
 |---|---|---|
 | **Protocol** (wire format, kinds, tags, hashing, normalization, test vectors) | the SIP-01 repo | rarely — a spec revision + `v` tag bump |
-| **Core** (reference implementation, contracts, engine, AI layer, template) | this repo | software releases; may improve without touching the wire format |
+| **Core** (reference implementation, contracts, engine, AI layer) | this repo | software releases; may improve without touching the wire format |
 | **Application** (branding, trust roots, business logic, pages, deploy config) | Dsearch / Savedd / your repo | whenever the product wants |
 
 Protocol compatibility always takes priority over software architecture.
@@ -31,16 +31,20 @@ features while the wire format (`v: "1"`) stays frozen.
 
 ---
 
-## What SIP-01-core is NOT
+## What sip-01-core is NOT
 
 - Not the protocol specification. The spec is the [`SIP-01`](https://github.com/NostrDanish/SIP-01)
   repo; this repo keeps a vendored copy at [`docs/SIP-01.md`](docs/SIP-01.md) for
   convenience. When they disagree, the spec repo wins.
-- Not "Dsearch renamed." Dsearch-specific branding, trust roots, control-plane
-  namespaces, business logic, and pages live in the application layer and are
-  being isolated (see [`docs/EXTRACTION-MAP.md`](docs/EXTRACTION-MAP.md)).
-- Not a hosted service. Everything runs client-side + on public Nostr relays;
-  the only optional server piece is a thin secret-injecting proxy (`worker.ts`).
+- Not an application. The Dsearch application plane (profile, trust anchors,
+  control-plane namespaces, pages, UI kit, deploy config) was **split out of
+  this repo** — the extraction program is closed (see
+  [`docs/EXTRACTION-MAP.md`](docs/EXTRACTION-MAP.md)). The legacy backend
+  (crawlers, relay, abuse API) moved to separate infrastructure repos (M10).
+- Not a hosted service. Everything runs client-side + on public Nostr relays.
+  The AI/Brave *proxy logic* (`src/ai/engineProxy.ts`,
+  `src/engine/providers/braveProxy.ts`) is isomorphic and host-agnostic; the
+  secret-holding worker shell belongs to the deploying application.
 
 ---
 
@@ -67,6 +71,7 @@ src/lib/               core contracts + shared machinery
     relayDiscovery.ts      NIP-66/NIP-11 relay auto-discovery (uncaged_index aware)
     corsProxy.ts           CORS proxy pool with failover
     storageMigration.ts    namespaced localStorage read-through migration
+                           (+ STORAGE_KEY_RENAMES: dsearch:* → sip01:* local keys)
     sanitizeUrl.ts / contentType.ts / languageFilter.ts
     engine/observation.ts  observation adapter (indexerSource injected)
 
@@ -75,13 +80,19 @@ src/engine/            the reusable search engine
                            SearchOptions / PrivacyTier — every source implements it
     providers/             15 provider implementations (Nostr-tier + clearnet APIs)
     providers/registry.ts  composable catalog: createProviderRegistry([...])
-    query/queryParser.ts   structured query → AST ("Dsearch-local" today, SIP-02 seed)
+    query/queryParser.ts   structured query → AST (engine-local, SIP-02 seed)
     query/queryEngine.ts   authoritative local AST evaluation + hard constraints
     query/queryMatch.ts    term matching / word coverage
     query/queryClassify.ts query classification → provider allowlists (privacy routing)
     query/resultRank.ts    coverage re-ranking (replaceable)
     query/calculator.ts    math instant answers
     votes.ts               NIP-25 (kind 7) 👍/👎 reactions on results
+    moderation.ts          pure moderation matcher (ModerationSet) — hosts inject
+                           a set built from their OWN trust policy; the core
+                           ships no trust anchors
+    runtime.tsx            EngineRuntime React context: the injection point for
+                           privacyMode/autoIndex/disabledProviders/languageFilter/
+                           voteWithIdentity + userSigner + moderation
     hooks/                 12 engine hooks (orchestrator, indexer, instant
                            answers, index/trending/stakes reads, …)
 
@@ -90,32 +101,16 @@ src/ai/                AI answer layer
     registry.ts            AI_PROVIDERS catalog
     openai-compatible.ts   the one implementation every compatible backend reuses
     aiConfig.ts            credential precedence: user BYOK → engine tier → community
-    engineProxy.ts         engine-proxy isomorph (worker-shared, host-agnostic)
+    engineProxy.ts         engine-proxy isomorph (runtime-agnostic, host-agnostic)
     hooks/                 useAIAnswer, useEngineAIStatus
 
-src/app/               the Dsearch application plane
-    profile.ts             DSEARCH_PROFILE (branding, tabs, providers, community
-                           AI config + PPQ invite) — the EngineProfile instance
-    relayConfig.ts         DSEARCH_RELAY_CONFIG (default pools + dsearch:* keys)
-    dsearchProtocol.ts     OWNER_PUBKEY, roles, dsearch:* control-plane namespaces
-    moderation.ts / reports.ts / affiliates.ts / referrals.ts
-    hooks/                 app-plane hooks (moderation, admin access, referrals…)
-
-src/hooks/             remaining app-level React bindings (auth, theme, nostr)
-src/components/        reusable UI kit (template) + app-specific components
-src/pages/             the Dsearch application's pages
-worker.ts              thin Cloudflare Worker shell: /api/ai/* + /api/search/brave
-                       (secrets injected server-side; imports the app profile)
-backend/               legacy self-hosted Meilisearch stack (superseded,
-                       disconnected from the build; future home = M10 decision)
+src/index.ts           the public API barrel (library entry point)
+src/test/setup.ts      vitest environment setup
 docs/SIP-01.md         vendored copy of the spec (canonical: NostrDanish/SIP-01)
 ```
 
-The physical moves into `src/protocol/`, `src/federation/`, `src/engine/`,
-`src/ai/`, and `src/app/` are complete (M1–M9; see
-[`docs/EXTRACTION-MAP.md`](docs/EXTRACTION-MAP.md)) and the separation is
-lint-enforced (below). What remains is the *apps split*: moving the Dsearch
-application plane out of this repo entirely.
+There is no application plane in this repo. Host identity arrives exclusively
+through the seams below.
 
 ---
 
@@ -128,21 +123,33 @@ application plane out of this repo entirely.
    internals.
 2. **`createProviderRegistry`** (`src/engine/providers/registry.ts`) — the
    plugin seam. Compose the built-ins with closed-source providers, or ship a
-   minimal catalog. The default export set is unchanged for this app.
+   minimal catalog.
 3. **`AIProvider`** (`src/ai/types.ts`) — two methods (`models`, `answer`)
    plus endpoint/key metadata. Any OpenAI-compatible backend works via
    `createOpenAICompatibleProvider`; a private AI slots in the same way.
 4. **The config seams** (`src/lib/engineConfig.ts` + `src/lib/relayConfig.ts`)
-   — the host app injects its identity once at bootstrap
+   — the host injects its identity once at bootstrap
    (`configureEngine({ id, search, ai })`,
-   `configureRelays(DSEARCH_RELAY_CONFIG)` for default relay pools and
-   storage-key names). Engine, AI, and relay internals never import an
+   `configureRelays({ searchRelays, …, storageKeys })` for default relay pools
+   and storage-key names). Engine, AI, and relay internals never import an
    application profile; they read the seams at call time. Neutral, brand-free
-   defaults exist until configured.
-5. **The worker proxy contract** (`worker.ts` + `src/ai/engineProxy.ts` +
-   `src/engine/providers/braveProxy.ts`) — server-side secret injection behind
-   same-origin `/api/*` routes. The proxy *logic* is isomorphic and host-agnostic
-   (all defaults are explicit parameters); the worker shell is the app deployment.
+   defaults exist until configured — the core hardcodes no relay URLs, no
+   trust anchors, and no credentials.
+5. **`EngineRuntime`** (`src/engine/runtime.tsx`) — the React injection point
+   for the engine hooks: user-tunable behavior (`privacyMode`, `autoIndex`,
+   `disabledProviders`, `languageFilter`, `voteWithIdentity`), the host's
+   `userSigner` (attributable votes; anonymous per-device signing is the
+   built-in default), and the host's `moderation` set. This seam RESOLVES the
+   old `useProviderSearch` cross-layer exception (the engine used to read the
+   Dsearch owner-signed moderation set directly from the app plane): the
+   moderation trust policy is now host-supplied data, not an import.
+
+A sixth, optional contract stays for hosts that deploy a server tier:
+**the engine-proxy contract** (`src/ai/engineProxy.ts` +
+`src/engine/providers/braveProxy.ts`) — server-side secret injection behind
+same-origin `/api/*` routes. The proxy *logic* is isomorphic and
+host-agnostic (all defaults are explicit parameters); the worker shell that
+holds the secrets belongs to the application's deployment repo.
 
 ## Enforced rules (eslint)
 
@@ -151,14 +158,15 @@ application plane out of this repo entirely.
 - `src/protocol/**` — **no `@/` imports at all.** Protocol code may only use npm
   packages and relative modules. It must stay byte-compatible with the spec §13
   vectors forever.
-- engine/AI/federation/core-contracts library set — no UI (`components/`,
-  `pages/`), no React hooks, **no `@/app/profile`** (the app profile), **no
-  `@/app/dsearchProtocol`** (the app control plane), no `@/app/**` at all.
-- engine hooks (`src/engine/hooks/`) — same bans, except hooks may compose
-  other hooks. **One documented exception:** `useProviderSearch` reads the
-  app moderation set (`@/app/moderation`) — pinned by its own eslint block
-  and tracked in the extraction map.
-- all of `src/lib/**` — never imports UI or hooks.
+- `src/federation/**` — protocol + npm + the two documented shared contracts
+  (the `SearchResult` *type* from `engine/providers/types`, and
+  `lib/contentType`). Nothing else from engine/ai/lib.
+- `src/lib/**` — protocol + federation + npm + the `SearchResult` type. Never
+  reaches up into engine or AI internals.
+- `src/engine/**` + `src/ai/**` — protocol/federation/lib + npm. The two
+  existing engine↔ai cross-imports (`ai/hooks/useAIAnswer` reads the query
+  classifier; `engine/providers/brave` reads `ENGINE_AI_BASE`) are documented
+  and stay. Shipped code never imports the test harness.
 
 The full block list is documented in [`PACKAGE_BOUNDARIES.md`](PACKAGE_BOUNDARIES.md)
 ("Enforcement").
@@ -170,12 +178,13 @@ changed — do it deliberately, in `PACKAGE_BOUNDARIES.md` first.
 
 ## Building your own engine
 
-**Path 1 — fork the stack:** clone, replace `src/app/profile.ts` with your own
-`EngineProfile` (branding, tabs, providers, AI prompt) and `src/app/relayConfig.ts`
-with your relay pools, call `configureEngine()` + `configureRelays()` at
-bootstrap, compose providers via `createProviderRegistry()`, delete the pages
-you don't want. You get the SIP-01 index, auto-indexing, privacy routing, and
-the UI kit for free.
+**Path 1 — build on the library:** depend on this repo, call
+`configureEngine()` + `configureRelays()` once at bootstrap with your engine
+id/relays, wrap your UI in `<EngineRuntimeProvider>` (your settings, your
+signer, your moderation set), compose providers via
+`createProviderRegistry()`, and render the results of `useProviderSearch`
+however you like. You get the SIP-01 index, auto-indexing, privacy routing,
+votes, and the AI layer behind stable contracts.
 
 **Path 2 — protocol-only:** depend on nothing here. Implement from the spec
 (`docs/SIP-01.md`), prove byte-compatibility against the §13 vectors (run

@@ -7,7 +7,13 @@ lint fails.
 
 Stability levels: **protocol-critical** (byte-compat with the SIP-01 spec,
 change only with a spec revision) · **stable** (public API, semver-style care)
-· **experimental** (internals, may change) · **application** (Dsearch-owned).
+· **experimental** (internals, may change).
+
+There is no application plane in this repository. The Dsearch application
+(profile, trust anchors, control plane, pages, UI, deploy config) was split
+out — the extraction program is CLOSED (see `docs/EXTRACTION-MAP.md`). The
+public API of every layer below is exported from the library entry point
+`src/index.ts`.
 
 ---
 
@@ -29,8 +35,7 @@ change only with a spec revision) · **stable** (public API, semver-style care)
 |---|---|
 | Public API | builders/parsers + namespace constants for the legacy cache, submissions, stakes, term signals |
 | May depend on | protocol, `engine/providers/types` (the `SearchResult` *type*), `contentType` |
-| Must NOT depend on | UI, hooks, app profile, app control plane (lint-enforced) |
-| Known debt | Dsearch-branded `alt` strings on submission events (`communityIndex.ts`) — cosmetic, but they ride the shared contract |
+| Must NOT depend on | engine internals, the AI layer, any other lib module (lint-enforced) |
 | Stability | **protocol-critical (frozen)** — renaming a namespace forks the network. Never rename; extend only via new tags/kinds. |
 
 ## Core contracts & infrastructure
@@ -39,23 +44,22 @@ change only with a spec revision) · **stable** (public API, semver-style care)
 
 | | |
 |---|---|
-| Public API | `SearchProvider` / `SearchResult` / `SearchOptions` / `ProviderSearchResponse` / `PrivacyTier` / `SearchSource`; `configureEngine` / `getEngineConfig` / `EngineRuntimeConfig` / `DEFAULT_ENGINE_SYSTEM_PROMPT`; `configureRelays` / `getRelayConfig` / `RelayPoolConfig` (the relay seam — host injects default pools + storage-key names once at startup); relay pool query/publish helpers; URL sanitizers |
+| Public API | `SearchProvider` / `SearchResult` / `SearchOptions` / `ProviderSearchResponse` / `PrivacyTier` / `SearchSource`; `configureEngine` / `getEngineConfig` / `EngineRuntimeConfig` / `DEFAULT_ENGINE_SYSTEM_PROMPT`; `configureRelays` / `getRelayConfig` / `RelayPoolConfig` (the relay seam — host injects default pools + storage-key names once at startup); relay pool query/publish helpers; URL sanitizers; `STORAGE_KEY_RENAMES` (the `dsearch:*` → `sip01:*` local-key migration registry) |
 | May depend on | protocol, federation |
-| Must NOT depend on | UI, hooks, app profile, app control plane |
+| Must NOT depend on | engine internals (beyond the `SearchResult` type), the AI layer (lint-enforced) |
 | Known debt | `corsProxy.ts` ships default proxy URLs that a private deployment must be able to override |
 | Stability | **stable** |
 
 ## Engine — `src/engine/**` + `src/lib/engine/observation.ts`
 
-`src/engine/providers/**` (contract + 15 built-ins + registry) · `src/engine/query/**` (query/rank stack) · `src/engine/votes.ts` · `src/engine/hooks/**` (12 orchestration/read hooks) · `src/lib/engine/observation.ts` (observation adapter with injected `indexerSource`)
+`src/engine/providers/**` (contract + 15 built-ins + registry) · `src/engine/query/**` (query/rank stack) · `src/engine/votes.ts` · `src/engine/moderation.ts` · `src/engine/runtime.tsx` · `src/engine/hooks/**` (12 orchestration/read hooks) · `src/lib/engine/observation.ts` (observation adapter with injected `indexerSource`)
 
 | | |
 |---|---|
-| Public API | `createProviderRegistry` (plugin seam), `ALL_PROVIDERS`, the 15 built-in providers, `parseQuery`/`evaluateQuery`/`applyHardConstraints`, `sortByQueryRelevance`, `classifyQuery`, `useProviderSearch`, `useSearchIndexer`, `useInstantAnswer`, index/trending/stakes read hooks |
-| Replaceable parts | any single provider · the registry set · the ranker · the AI provider |
-| May depend on | core, federation, protocol, `engineConfig`/`relayConfig` seams |
-| Must NOT depend on | UI, pages, app profile, app control plane — with **one documented exception**: `engine/hooks/useProviderSearch.ts` reads the owner-signed moderation set via `@/app/moderation` + `@/app/hooks/useModeration` (enforced by the dedicated `boundaries/engine-hooks-provider-search-exception` eslint block; resolution deferred to the apps split — see `docs/EXTRACTION-MAP.md`) |
-| Known debt | 3 per-feature `dsearch:*` localStorage keys: `votes.ts` (`dsearch:votes`), `providers/braveKey.ts` (`dsearch:brave-api-key`), `providers/parallel.ts` (`dsearch:parallel-api-key`); Dsearch-branded `alt` strings on vote events (`votes.ts`) |
+| Public API | `createProviderRegistry` (plugin seam), `ALL_PROVIDERS`, the 15 built-in providers, `parseQuery`/`evaluateQuery`/`applyHardConstraints`, `sortByQueryRelevance`, `classifyQuery`, `EngineRuntime` / `EngineRuntimeProvider` / `useEngineRuntime`, `ModerationSet` / `toModerationSet` / `isHiddenResult`, `useProviderSearch`, `useSearchIndexer`, `useInstantAnswer`, index/trending/stakes read hooks |
+| Replaceable parts | any single provider · the registry set · the ranker · the AI provider · the moderation set · the runtime values |
+| May depend on | core, federation, protocol, `engineConfig`/`relayConfig` seams, the host-injected `EngineRuntime` |
+| Must NOT depend on | any application plane — none exists in this repo. Host identity arrives exclusively via the `engineConfig`/`relayConfig` seams and `EngineRuntime`. The old `useProviderSearch` → `@/app/moderation` cross-layer exception is **RESOLVED**: moderation is host-supplied data (`EngineRuntime.moderation`), not an import. |
 | Stability | contracts **stable**, provider internals **experimental** |
 
 ## AI — `src/ai/**`
@@ -65,53 +69,33 @@ change only with a spec revision) · **stable** (public API, semver-style care)
 | | |
 |---|---|
 | Public API | `AIProvider` (`models` + `answer`, with endpoint/key metadata), `AI_PROVIDERS` catalog, `createOpenAICompatibleProvider`, `resolveAIConfig` (credential precedence), `useAIAnswer`, engine-proxy isomorph (`engineProxy.ts`: `readEngineConfig` / `validateChatPayload` / `buildUpstreamBody` / `verifyAdminAuth` / `applyAdminAction` … — all host defaults are explicit `EngineAIDefaults` parameters) |
-| May depend on | core (`corsProxy`, `engineConfig`) |
-| Must NOT depend on | UI, app profile, app control plane; never hard-requires one vendor |
-| App-side remainder | none — Dsearch's community free-tier key (`ai.community`) and PPQ invite URL live in the app profile (`src/app/profile.ts`) and reach this layer only via the engineConfig seam |
-| Known debt | 1 per-feature `dsearch:*` localStorage key: `aiConfig.ts` (`dsearch:ai-config`) |
+| May depend on | core (`corsProxy`, `engineConfig`), engine query classifier + `SearchResult` type (documented cross-imports) |
+| Must NOT depend on | any application plane; never hard-requires one vendor |
 | Stability | interface **stable**, provider catalog **experimental** |
-
-## Application — Dsearch (isolated under `src/app/`; see extraction map)
-
-`src/app/profile.ts` (`DSEARCH_PROFILE` + community AI config + PPQ invite) · `src/app/relayConfig.ts` (`DSEARCH_RELAY_CONFIG`: default relay pools + `dsearch:*` pool storage keys) · `src/app/dsearchProtocol.ts` (OWNER_PUBKEY, roles, `dsearch:*` namespaces) · `src/app/moderation.ts` · `src/app/reports.ts` · `src/app/affiliates.ts` · `src/app/referrals.ts` · `src/app/hooks/**` · `src/pages/**` · app components · brand assets · `worker.ts` · deploy configs
-
-| | |
-|---|---|
-| Rule | anything Dsearch-branded, Dsearch-namespaced, Dsearch-owned (trust root, business logic, hub pages) lives here and must never be required by the layers above |
-| Stability | **application** — free to change with the product |
 
 ## Enforcement (eslint `boundaries/*` blocks)
 
 The blocks in `eslint.config.js`, general → specific (later flat-config
 blocks override earlier ones for the same files):
 
-- `boundaries/lib-no-ui` — nothing in `src/lib/**` imports UI, pages, or
-  React hooks.
-- `boundaries/core-contracts` — `src/lib/{appRelays,relayDiscovery,searchRelays,corsProxy}.ts`:
-  additionally no app profile, no app control plane, no `@/app/**`.
-- `boundaries/engine-and-ai` — `src/engine/providers/**`, `src/engine/query/**`,
-  `src/engine/votes.ts`, `src/lib/engine/**`, `src/ai/**`,
-  `src/lib/engineConfig.ts`, `src/federation/**`: no UI, no hooks, no
-  `@/app/**` (host identity via the seams).
-- `boundaries/engine-hooks` — the 11 non-orchestrator engine hooks in
-  `src/engine/hooks/`: same bans, but `@/hooks/**` stays allowed (hooks
-  compose hooks).
-- `boundaries/engine-hooks-provider-search-exception` — the **single
-  documented exception**: `src/engine/hooks/useProviderSearch.ts` may import
-  `@/app/moderation` + `@/app/hooks/useModeration` only; every other
-  application-plane import is banned by name. Tracked in
-  `docs/EXTRACTION-MAP.md` ("Known cross-layer edge").
 - `boundaries/protocol` — `src/protocol/**` may not import any `@/` module
   at all.
+- `boundaries/federation` — `src/federation/**` imports protocol + npm +
+  the two documented shared contracts (`engine/providers/types`,
+  `lib/contentType`) only.
+- `boundaries/lib` — `src/lib/**` imports protocol + federation + npm +
+  the `SearchResult` type; never engine internals or the AI layer.
+- `boundaries/engine-and-ai` — `src/engine/**` + `src/ai/**` sit on
+  protocol/federation/lib; shipped code never imports the test harness.
+  The two existing engine↔ai cross-imports are documented above and stay.
 
 ## Server boundary
 
-`worker.ts` + the isomorphic proxy modules (`src/ai/engineProxy.ts`, `src/engine/providers/braveProxy.ts`).
-Secrets (`OPENAI_API_KEY`/`AI_API_KEY`, `BRAVE_API_KEY`) exist only in the worker
-environment; the browser tier never holds them. `OWNER_PUBKEY` is a public
-constant by design. The worker imports the app profile (it *is* the app
-deployment); the shared proxy logic must stay runtime-agnostic (no
-browser-only or CF-only APIs).
+The isomorphic proxy modules (`src/ai/engineProxy.ts`,
+`src/engine/providers/braveProxy.ts`) are runtime-agnostic: all host defaults
+are explicit parameters, no browser-only or CF-only APIs. The secret-holding
+shell (worker, secrets like `OPENAI_API_KEY`/`BRAVE_API_KEY`) belongs to the
+deploying application's infrastructure, not to this library.
 
 ---
 

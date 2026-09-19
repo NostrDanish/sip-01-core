@@ -1,7 +1,8 @@
-# Dsearch search queries
+# Search queries
 
-Dsearch understands real search syntax. Type naturally — plain words
-work exactly like before — and reach for operators when you want precision.
+The sip-01-core query engine understands real search syntax. Type naturally —
+plain words work exactly like before — and reach for operators when you want
+precision.
 
 Everything is parsed into a structured form (text vs. filters) and executed
 **locally** against the results: a relay or engine that doesn't understand
@@ -62,8 +63,8 @@ nostr type:pdf after:2026-01-01
 - **Unknown metadata** — a document with no known language passes a `lang:`
   filter (most pages aren't language-tagged yet); a document with no known
   type **fails** a `type:` filter (type is never guessed).
-- **Your settings language filter** (Settings → General) still applies; an
-  explicit `lang:` operator wins for that search.
+- **The host's result language filter** (`EngineRuntime.languageFilter`)
+  still applies; an explicit `lang:` operator wins for that search.
 - **Nostr identifiers stay private** — an npub/note/URL in the search bar
   never leaves for external engines at all (query classification runs first).
 - Malformed syntax (`nostr AND`, unclosed quotes, empty `site:`) never
@@ -71,4 +72,4 @@ nostr type:pdf after:2026-01-01
 
 Under the hood: `src/engine/query/queryParser.ts` (structured parse) +
 `src/engine/query/queryEngine.ts` (authoritative local evaluation). Both are
-internal to Dsearch — no protocol changes, nothing to federate.
+internal to the engine — no protocol changes, nothing to federate.
