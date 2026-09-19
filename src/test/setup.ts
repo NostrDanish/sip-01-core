@@ -23,7 +23,7 @@ Object.defineProperty(window, 'scrollTo', {
 });
 
 // Mock IntersectionObserver
-global.IntersectionObserver = vi.fn().mockImplementation((_callback) => ({
+globalThis.IntersectionObserver = vi.fn().mockImplementation((_callback) => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn(),
@@ -33,7 +33,7 @@ global.IntersectionObserver = vi.fn().mockImplementation((_callback) => ({
 }));
 
 // Mock ResizeObserver
-global.ResizeObserver = vi.fn().mockImplementation((_callback) => ({
+globalThis.ResizeObserver = vi.fn().mockImplementation((_callback) => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn(),
