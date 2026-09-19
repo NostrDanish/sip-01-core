@@ -12,7 +12,7 @@ The library reads exactly **one** build-time environment variable:
 
 `VITE_*` variables are baked into the public bundle — by design, nothing secret may ever be placed in one. This is the only `import.meta.env` read in `src/`.
 
-Server-side secrets exist only in the **host's deployment**, never in this library: the isomorphic proxy modules read `OPENAI_API_KEY` (with `AI_API_KEY` as a deprecated alias) and `BRAVE_API_KEY` from an injected env object (`EngineAIEnv` in `src/ai/engineProxy.ts`, `BraveProxyEnv` in `src/engine/providers/braveProxy.ts`). `.env.example` documents the pattern — note that its worker and legacy-stack sections describe the *old Dsearch deployment*; the worker shell and backend were removed from this repo with the application plane, and hosts deploy their own equivalents.
+Server-side secrets exist only in the **host's deployment**, never in this library: the isomorphic proxy modules read `OPENAI_API_KEY` (with `AI_API_KEY` as a deprecated alias) and `BRAVE_API_KEY` from an injected env object (`EngineAIEnv` in `src/ai/engineProxy.ts`, `BraveProxyEnv` in `src/engine/providers/braveProxy.ts`). `.env.example` documents this pattern: the library itself reads no secrets; host deployments operate the proxy and hold the keys. The old Dsearch worker shell and legacy backend stack were removed from this repo with the application plane — hosts deploy their own equivalents.
 
 ## No client-side API keys by default
 
