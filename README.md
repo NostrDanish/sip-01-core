@@ -104,11 +104,13 @@ designed as **replaceable components**: you can keep the built-ins, swap
 individual ones, or keep your own versions proprietary behind the same
 interfaces.
 
-**Licensing boundary:** this repository currently has **no LICENSE file**.
-Without one, no reuse or distribution rights are granted by default. A
-licensing decision is required before third-party reuse or distribution of
-any layer; until then, treat the code as all-rights-reserved and do not
-assume terms for any derivative, open or closed.
+**Licensing boundary — owner decision required:** this repository currently
+has **no LICENSE file**. An earlier revision of this README stated "MIT",
+but no LICENSE file was ever committed, so the actual terms are
+**undetermined** — this contradiction must be resolved by the project
+owner before any third-party reuse or distribution of any layer. Until
+then, no reuse or distribution rights are granted by default, and no terms
+should be assumed for any derivative, open or closed.
 
 ## Versioning — three separate axes
 
@@ -363,7 +365,9 @@ optional Cloudflare worker (engine AI proxy only)
 
 ## License
 
-No LICENSE file exists in this repository yet — see the
+Undetermined — no LICENSE file exists in this repository. An earlier
+revision of this README stated "MIT"; that contradiction is unresolved and
+requires a project-owner decision. See the
 [licensing boundary](#open-contracts-closed-components) above. Until a
 licensing decision lands, no reuse or distribution rights are granted by
 default.
