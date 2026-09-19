@@ -22,7 +22,7 @@ import { useQuery } from '@tanstack/react-query';
 import { nip19 } from 'nostr-tools';
 import { NIP05 } from '@nostrify/nostrify';
 
-import { evaluateMath, formatMathResult, isMathQuery } from '@/lib/calculator';
+import { evaluateMath, formatMathResult } from '@/lib/calculator';
 import { sanitizeUrl } from '@/lib/sanitizeUrl';
 import { classifyQuery } from '@/lib/queryClassify';
 import { parseQuery, textOnly } from '@/lib/queryParser';

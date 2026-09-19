@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useSeoMeta } from '@unhead/react';
 import {
-  Search, Zap, Globe, Database, ArrowRight, Lock, Code,
+  Zap, Globe, Database, ArrowRight, Lock, Code,
   ExternalLink, BookOpen, Newspaper, Shield, Layers, Gem, Users, FileText,
 } from 'lucide-react';
 

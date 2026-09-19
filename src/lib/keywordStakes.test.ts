@@ -9,7 +9,6 @@ import { describe, it, expect } from 'vitest';
 import type { NostrEvent } from '@nostrify/nostrify';
 
 import {
-  STAKE_KIND,
   STAKE_T_TAG,
   buildStakeEvent,
   parseStakeEvent,

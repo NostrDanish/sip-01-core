@@ -3,7 +3,6 @@ import { useSeoMeta } from '@unhead/react';
 import { ArrowRight, BookOpen, Code, GraduationCap, Search, Server } from 'lucide-react';
 
 import { Layout } from '@/components/Layout';
-import { Card, CardContent } from '@/components/ui/card';
 
 export default function DocsPage() {
   useSeoMeta({

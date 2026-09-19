@@ -27,11 +27,8 @@ interface DDGRawResult {
 function parseDDGResults(html: string): DDGRawResult[] {
   const results: DDGRawResult[] = [];
 
-  // DDG standard results page: each result is in a div with class "result"
-  // containing a link with class "result__a" and snippet in "result__snippet"
-  const resultPattern = /<div[^>]*class="[^"]*result\b[^"]*"[^>]*>([\s\S]*?)<\/div>\s*(?=<div[^>]*class="[^"]*result\b|<\/div>\s*<\/div>)/gi;
-
-  // Also try the links table pattern used by DDG lite
+  // DDG result markup: a link with class "result__a" and a snippet with
+  // class "result__snippet" (standard results page + DDG lite links table).
   const linkPattern = /<a[^>]*class="[^"]*result__a[^"]*"[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi;
   const snippetPattern = /<a[^>]*class="[^"]*result__snippet[^"]*"[^>]*>([\s\S]*?)<\/a>/gi;
 

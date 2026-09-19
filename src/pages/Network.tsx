@@ -3,7 +3,7 @@ import { useSeoMeta } from '@unhead/react';
 import { Activity, Database, FileText, Globe, Network, Server, Users } from 'lucide-react';
 
 import { Layout } from '@/components/Layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useIndexRelayStatus, useNodeHeartbeats } from '@/hooks/useNetworkStats';

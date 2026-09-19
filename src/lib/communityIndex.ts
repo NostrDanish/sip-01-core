@@ -227,8 +227,8 @@ export async function parseNostraEvent(event: NostrEvent): Promise<SearchResult 
   let title: string | undefined;
   let url: string | undefined;
   let type: ContentType | undefined;
-  let description = '';
-  let tags: string[] = [];
+  let description: string;
+  let tags: string[];
   if (event.content.startsWith('NOSTRA_ENC_V1:')) {
     const payload = await decryptNostraPayload(event.content);
     if (!payload) return null;
