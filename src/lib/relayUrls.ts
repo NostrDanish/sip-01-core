@@ -29,6 +29,9 @@ export function normalizeRelayUrl(input: string): string | null {
   let url = input.trim();
   if (!url) return null;
   if (!url.startsWith('ws://') && !url.startsWith('wss://')) {
+    // Only bare hosts get the wss:// prefix — an input that already carries
+    // a non-ws scheme (http://, ftp://, …) is not a relay URL at all.
+    if (/^[a-z][a-z0-9+.-]*:\/\//i.test(url)) return null;
     url = `wss://${url}`;
   }
   try {
