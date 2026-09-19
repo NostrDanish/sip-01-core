@@ -25,7 +25,7 @@ import { LoginArea } from '@/components/auth/LoginArea';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useNostrPublish } from '@/hooks/useNostrPublish';
 import { useToast } from '@/hooks/useToast';
-import { buildStakeEvent } from '@/lib/keywordStakes';
+import { buildStakeEvent } from '@/federation/keywordStakes';
 import { isValidSubmissionUrl } from '@/lib/contentType';
 
 interface StakeKeywordDialogProps {

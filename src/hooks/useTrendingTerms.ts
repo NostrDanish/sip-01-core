@@ -17,7 +17,7 @@ import { getSearchRelay } from '@/lib/searchRelays';
 import { getIndexRelayUrls } from '@/lib/appRelays';
 import {
   INDEX_KIND,
-} from '@/lib/searchIndex';
+} from '@/federation/searchIndex';
 import {
   TERM_SIGNAL_T_TAG,
   TERM_REVEAL_T_TAG,
@@ -25,7 +25,7 @@ import {
   parseTermSignal,
   parseTermReveal,
   verifyTermReveal,
-} from '@/lib/termSignals';
+} from '@/federation/termSignals';
 
 export interface TrendingTerm {
   /** Plaintext query (only ever present for threshold-crossed terms). */

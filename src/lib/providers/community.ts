@@ -23,7 +23,7 @@ import {
   parseSubmissionEvent,
   parseNostraEvent,
   parseBookmarkEvent,
-} from '@/lib/communityIndex';
+} from '@/federation/communityIndex';
 import { parseQuery } from '@/lib/queryParser';
 import { evaluateQuery, docFromSearchResult } from '@/lib/queryEngine';
 import type { SearchProvider, SearchOptions, ProviderSearchResponse, SearchResult } from './types';

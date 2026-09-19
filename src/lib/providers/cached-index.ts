@@ -18,7 +18,7 @@ import {
   INDEX_KIND,
   normalizeQuery,
   parseCacheEvent,
-} from '@/lib/searchIndex';
+} from '@/federation/searchIndex';
 import type { SearchProvider, SearchOptions, ProviderSearchResponse } from './types';
 export const cachedIndexProvider: SearchProvider = {
   id: 'cached-index',

@@ -14,7 +14,7 @@ import type { NostrEvent, NostrFilter } from '@nostrify/nostrify';
 
 import { getSearchRelay } from '@/lib/searchRelays';
 import { getIndexRelayUrls } from '@/lib/appRelays';
-import { INDEX_KIND, INDEXER_PUBKEYS } from '@/lib/searchIndex';
+import { INDEX_KIND, INDEXER_PUBKEYS } from '@/federation/searchIndex';
 
 export interface CachedQueryEntry {
   /** Original query text (from the `query` tag). */

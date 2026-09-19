@@ -44,7 +44,7 @@ function hexToBytes(hex: string): Uint8Array {
 }
 
 import type { SearchResult } from '@/lib/providers/types';
-import { INDEX_KIND, normalizeQuery } from '@/lib/searchIndex';
+import { INDEX_KIND, normalizeQuery } from '@/federation/searchIndex';
 import { getIndexerIdentity } from '@/protocol/indexerIdentity';
 import { buildIndexEvent, normalizeIndexUrl } from '@/protocol/webIndex';
 import { observationFromResult } from '@/lib/engine/observation';
@@ -60,7 +60,7 @@ import {
   parseTermReveal,
   parseTermSignal,
   verifyTermReveal,
-} from '@/lib/termSignals';
+} from '@/federation/termSignals';
 import { getIndexRelayUrls } from '@/lib/appRelays';
 import { queryRelayPool, publishToRelayPool } from '@/lib/searchRelays';
 import { useAppContext } from '@/hooks/useAppContext';

@@ -10,7 +10,7 @@ import type { NostrEvent, NostrFilter } from '@nostrify/nostrify';
 
 import { queryRelayPool } from '@/lib/searchRelays';
 import { getSearchRelayUrls, getIndexRelayUrls } from '@/lib/appRelays';
-import { STAKE_KIND, STAKE_T_TAG } from '@/lib/keywordStakes';
+import { STAKE_KIND, STAKE_T_TAG } from '@/federation/keywordStakes';
 import { isValidSubmissionUrl } from '@/lib/contentType';
 
 export interface StakeEntry {

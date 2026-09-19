@@ -42,7 +42,7 @@
  */
 import type { NostrEvent } from '@nostrify/nostrify';
 
-import { INDEX_KIND, normalizeQuery } from '@/lib/searchIndex';
+import { INDEX_KIND, normalizeQuery } from '@/federation/searchIndex';
 
 /** d-tag prefix for hashed term signals. */
 export const TERM_SIGNAL_D_PREFIX = '0xsearchstr:term:';

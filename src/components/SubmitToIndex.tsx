@@ -24,7 +24,7 @@ import { LoginArea } from '@/components/auth/LoginArea';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useNostrPublish } from '@/hooks/useNostrPublish';
 import { useToast } from '@/hooks/useToast';
-import { buildSubmissionEvent } from '@/lib/communityIndex';
+import { buildSubmissionEvent } from '@/federation/communityIndex';
 import { detectContentType, contentTypeLabel, isValidSubmissionUrl, type ContentType } from '@/lib/contentType';
 import { cn } from '@/lib/utils';
 

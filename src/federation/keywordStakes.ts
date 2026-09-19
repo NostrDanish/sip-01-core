@@ -28,7 +28,7 @@ import type { NostrEvent } from '@nostrify/nostrify';
 
 import type { SearchResult } from '@/lib/providers/types';
 import { isValidSubmissionUrl } from '@/lib/contentType';
-import { normalizeQuery } from '@/lib/searchIndex';
+import { normalizeQuery } from '@/federation/searchIndex';
 
 /** Kind used for keyword stakes (NIP-78 application data). */
 export const STAKE_KIND = 30078;

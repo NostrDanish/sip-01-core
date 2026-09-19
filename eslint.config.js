@@ -100,10 +100,7 @@ export default defineConfig(
       "src/lib/searxngInstances.ts",
       "src/lib/aiConfig.ts",
       "src/lib/engineConfig.ts",
-      "src/lib/termSignals.ts",
-      "src/lib/keywordStakes.ts",
-      "src/lib/communityIndex.ts",
-      "src/lib/searchIndex.ts",
+      "src/federation/**/*.ts",
     ],
     ignores: ["**/*.test.ts", "**/*.test.tsx"],
     rules: {

@@ -16,7 +16,7 @@ import type { NostrEvent, NostrFilter } from '@nostrify/nostrify';
 
 import { getSearchRelayUrls, getIndexRelayUrls } from '@/lib/appRelays';
 import { getSearchRelay } from '@/lib/searchRelays';
-import { STAKE_KIND, stakeDTag, parseStakeEvent } from '@/lib/keywordStakes';
+import { STAKE_KIND, stakeDTag, parseStakeEvent } from '@/federation/keywordStakes';
 import type { SearchProvider, SearchOptions, ProviderSearchResponse } from './types';
 
 /** Max stakes shown for a single keyword. */
