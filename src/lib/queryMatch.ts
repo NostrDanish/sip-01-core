@@ -40,12 +40,18 @@ export function normalizeText(text: string): string {
   return text.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ');
 }
 
-/** Naive singular: "wallets"→"wallet", "queries"→"query", "pages"→"page". */
-function foldPlural(term: string): string {
-  if (term.length > 4 && term.endsWith('ies')) return `${term.slice(0, -3)}y`;
-  if (term.length > 3 && term.endsWith('es')) return term.slice(0, -2);
-  if (term.length > 2 && term.endsWith('s') && !term.endsWith('ss')) return term.slice(0, -1);
-  return term;
+/** Naive singular candidates: "wallets"→"wallet", "queries"→"query",
+ *  "pages"→"page" / "guides"→"guide" (and "boxes"→"box"). A term can fold
+ *  more than one way — every candidate is tried. */
+function foldPlural(term: string): string[] {
+  const folds = new Set<string>();
+  if (term.length > 4 && term.endsWith('ies')) folds.add(`${term.slice(0, -3)}y`);
+  if (term.length > 3 && term.endsWith('es')) {
+    folds.add(term.slice(0, -1)); // pages→page, guides→guide (drop plural -s)
+    folds.add(term.slice(0, -2)); // boxes→box, churches→church (drop -es)
+  }
+  if (term.length > 2 && term.endsWith('s') && !term.endsWith('ss')) folds.add(term.slice(0, -1));
+  return [...folds];
 }
 
 export interface QueryTerms {
@@ -94,10 +100,9 @@ export function tokenizeRaw(query: string): QueryTerms {
 
 /** Does a single term appear in the (space-padded) haystack? */
 export function termMatches(haystack: string, term: string): boolean {
-  const folded = foldPlural(term);
   return (
     haystack.includes(` ${term} `)
-    || (folded !== term && haystack.includes(` ${folded} `))
+    || foldPlural(term).some((folded) => haystack.includes(` ${folded} `))
     // Substring fallback for compounds ("websearch" contains "search") —
     // long terms only: a 2–3 char substring ("to", "ai") matches inside
     // unrelated words ("history", "said") and destroys the guard's value.
