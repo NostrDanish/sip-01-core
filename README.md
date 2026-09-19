@@ -2,7 +2,39 @@
   <img src="public/brand/logo.svg" alt="Dsearch — The community-driven search engine. Powered by Nostr, owned by no one." width="480">
 </p>
 
-# Dsearch
+# SIP-01-core
+
+**The reusable reference implementation of the SIP-01 Search Index Protocol —
+engine, contracts, providers, and AI layer that any search engine can build on.**
+
+> **Repository roles — read this first:**
+>
+> | Repo | Role |
+> |---|---|
+> | [`NostrDanish/SIP-01`](https://github.com/NostrDanish/SIP-01) | **The protocol** — canonical specification, wire format, test vectors |
+> | **`NostrDanish/sip-01-core` (this repo)** | **The core software** — protocol reference implementation + reusable search-engine layer |
+> | `NostrDanish/Dsearch`, `Savedd`, … | **Applications** — products built on the core |
+>
+> Architecture: [`ARCHITECTURE.md`](ARCHITECTURE.md) · Layer contracts:
+> [`PACKAGE_BOUNDARIES.md`](PACKAGE_BOUNDARIES.md) · Extraction status:
+> [`docs/EXTRACTION-MAP.md`](docs/EXTRACTION-MAP.md)
+>
+> **Protocol version ≠ software version.** The SIP-01 wire format (`v: "1"`) is
+> frozen except through the spec; this core can improve independently.
+>
+> **Licensing note:** per-layer license terms (and what they mean for
+> closed-source derivatives) are a pending project decision being settled
+> before ecosystem publication. Until a LICENSE file exists per layer, no
+> reuse rights are granted by default.
+
+This repository currently also contains the **Dsearch application** — the
+flagship engine — as its in-tree reference app (being isolated into an
+application layer; see the extraction map). Everything below the next divider
+documents that application.
+
+---
+
+# Dsearch (the reference application)
 
 **The community-driven search engine. Powered by Nostr, owned by no one.**
 
