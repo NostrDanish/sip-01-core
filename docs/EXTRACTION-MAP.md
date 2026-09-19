@@ -57,8 +57,6 @@ the hard way:
 - **No LICENSE file** — without one, no reuse rights are granted by
   default; a licensing decision is required before third-party
   reuse/distribution. See the README licensing note.
-- **Package identity** — `package.json` is still `dsearch`, private,
-  `0.0.0`; the repo is not published to npm.
 
 ## Known cross-layer edge (accepted, documented)
 

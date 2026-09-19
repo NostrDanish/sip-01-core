@@ -1,7 +1,8 @@
 {
-  "name": "dsearch",
+  "name": "sip-01-core",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "Reusable SIP-01 (kind 39697) reference implementation and search-engine core — co-hosts the Dsearch application pending the apps split",
   "type": "module",
   "scripts": {
     "dev": "vite",
