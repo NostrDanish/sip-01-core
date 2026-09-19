@@ -18,7 +18,7 @@
 import type { NostrEvent } from '@nostrify/nostrify';
 
 import { normalizeIndexUrl } from '@/lib/webIndex';
-import { readStoredWithLegacy, writeStoredCanonical } from '@/lib/dsearchProtocol';
+import { readStoredWithLegacy, writeStoredCanonical } from '@/lib/storageMigration';
 
 /** NIP-25 reaction kind. */
 export const VOTE_KIND = 7;

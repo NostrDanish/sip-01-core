@@ -30,7 +30,7 @@
 import { queryRelayPool } from '@/lib/searchRelays';
 import { proxiedFetch } from '@/lib/corsProxy';
 import { SEARCH_RELAYS, normalizeRelayUrl } from '@/lib/appRelays';
-import { readStoredWithLegacy, writeStoredCanonical } from '@/lib/dsearchProtocol';
+import { readStoredWithLegacy, writeStoredCanonical } from '@/lib/storageMigration';
 
 /* ------------------------------------------------------------------ */
 /* Constants                                                           */

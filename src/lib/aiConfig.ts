@@ -26,7 +26,7 @@
 import { getAIProvider } from '@/lib/ai/registry';
 import type { EngineAIStatus } from '@/lib/ai/engineProxy';
 import { ENGINE_PROFILE } from '@/lib/engine/profile';
-import { readStoredWithLegacy, writeStoredCanonical } from '@/lib/dsearchProtocol';
+import { readStoredWithLegacy, writeStoredCanonical } from '@/lib/storageMigration';
 
 export type { EngineAIStatus } from '@/lib/ai/engineProxy';
 

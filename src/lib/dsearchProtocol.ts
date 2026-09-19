@@ -213,34 +213,8 @@ export function resolveRoleEvents(events: NostrEvent[]): ResolvedRoles {
 /* localStorage migration (device-local, not protocol)                 */
 /* ------------------------------------------------------------------ */
 
-/**
- * Read a namespaced localStorage key, falling back to its legacy
- * presearchstr/0xsearchstr name. On a legacy hit the value is copied to the
- * canonical key and the legacy key removed — settings migrate on first read.
- */
-export function readStoredWithLegacy(canonicalKey: string, legacyKey: string): string | null {
-  try {
-    const value = localStorage.getItem(canonicalKey);
-    if (value !== null) return value;
-    const legacy = localStorage.getItem(legacyKey);
-    if (legacy !== null) {
-      localStorage.setItem(canonicalKey, legacy);
-      localStorage.removeItem(legacyKey);
-      return legacy;
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-/** Write ONLY the canonical key (and clear the legacy one). null removes. */
-export function writeStoredCanonical(canonicalKey: string, legacyKey: string, value: string | null): void {
-  try {
-    if (value === null) localStorage.removeItem(canonicalKey);
-    else localStorage.setItem(canonicalKey, value);
-    localStorage.removeItem(legacyKey);
-  } catch {
-    // Storage unavailable — non-fatal everywhere it's used.
-  }
-}
+// The generic storage-migration helpers (readStoredWithLegacy /
+// writeStoredCanonical) live in src/lib/storageMigration.ts — a storage
+// primitive does not belong in this application's trust-root module.
+// This file keeps only the Dsearch control plane: trust root, namespaces,
+// roles, and the permission matrix.

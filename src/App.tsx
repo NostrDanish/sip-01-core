@@ -16,7 +16,7 @@ import { AppConfig } from '@/contexts/AppContext';
 import { APP_RELAYS } from '@/lib/appRelays';
 import { getBrowserLanguage } from '@/lib/languageFilter';
 import { ENGINE_PROFILE } from '@/lib/engine/profile';
-import { readStoredWithLegacy } from '@/lib/dsearchProtocol';
+import { readStoredWithLegacy } from '@/lib/storageMigration';
 import AppRouter from './AppRouter';
 
 // One-time localStorage migration: the app config moved from the generic

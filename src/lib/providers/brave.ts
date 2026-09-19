@@ -18,7 +18,7 @@ import { getWebEngineBases } from './enginePriority';
 import { braveLanguageParam } from '@/lib/languageFilter';
 import { toEngineQuery } from '@/lib/queryParser';
 import { ENGINE_AI_BASE } from '@/lib/aiConfig';
-import { readStoredWithLegacy, writeStoredCanonical } from '@/lib/dsearchProtocol';
+import { readStoredWithLegacy, writeStoredCanonical } from '@/lib/storageMigration';
 
 const LS_BRAVE_KEY = 'dsearch:brave-api-key';
 const LEGACY_LS_BRAVE_KEY = 'presearchstr:brave-api-key';

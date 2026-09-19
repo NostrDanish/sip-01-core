@@ -1,6 +1,6 @@
 import type { RelayMetadata } from '@/contexts/AppContext';
 import { getDiscoveredSearchRelays, getDiscoveredIndexRelays } from '@/lib/relayDiscovery';
-import { readStoredWithLegacy, writeStoredCanonical } from '@/lib/dsearchProtocol';
+import { readStoredWithLegacy, writeStoredCanonical } from '@/lib/storageMigration';
 
 /**
  * App default relays. Used as the initial `relayMetadata` for new users and as
