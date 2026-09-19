@@ -11,9 +11,9 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { useAppContext } from '@/hooks/useAppContext';
-import { useMyNode } from '@/hooks/useMyNode';
-import { useIndexRelayStatus, useNodeHeartbeats } from '@/hooks/useNetworkStats';
-import { useRecentIndexedDocs } from '@/hooks/useRecentIndexedDocs';
+import { useMyNode } from '@/engine/hooks/useMyNode';
+import { useIndexRelayStatus, useNodeHeartbeats } from '@/engine/hooks/useNetworkStats';
+import { useRecentIndexedDocs } from '@/engine/hooks/useRecentIndexedDocs';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 function timeAgo(unix: number): string {

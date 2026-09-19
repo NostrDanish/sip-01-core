@@ -8,7 +8,7 @@
 import { Link } from 'react-router-dom';
 import { TrendingUp } from 'lucide-react';
 
-import { useTrendingTerms } from '@/hooks/useTrendingTerms';
+import { useTrendingTerms } from '@/engine/hooks/useTrendingTerms';
 import { cn } from '@/lib/utils';
 
 interface TrendingQueriesProps {

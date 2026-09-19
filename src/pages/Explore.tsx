@@ -18,9 +18,9 @@ import { Layout } from '@/components/Layout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useTrendingTerms, type TrendingTerm } from '@/hooks/useTrendingTerms';
-import { useRecentStakes, type StakeEntry } from '@/hooks/useRecentStakes';
-import { useRecentIndexedDocs, type IndexedDocEntry } from '@/hooks/useRecentIndexedDocs';
+import { useTrendingTerms, type TrendingTerm } from '@/engine/hooks/useTrendingTerms';
+import { useRecentStakes, type StakeEntry } from '@/engine/hooks/useRecentStakes';
+import { useRecentIndexedDocs, type IndexedDocEntry } from '@/engine/hooks/useRecentIndexedDocs';
 import { sanitizeUrl } from '@/lib/sanitizeUrl';
 
 function timeAgo(timestamp: number): string {

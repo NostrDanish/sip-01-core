@@ -6,8 +6,8 @@ import { Layout } from '@/components/Layout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useIndexRelayStatus, useNodeHeartbeats } from '@/hooks/useNetworkStats';
-import { useRecentIndexedDocs } from '@/hooks/useRecentIndexedDocs';
+import { useIndexRelayStatus, useNodeHeartbeats } from '@/engine/hooks/useNetworkStats';
+import { useRecentIndexedDocs } from '@/engine/hooks/useRecentIndexedDocs';
 
 function timeAgo(unix: number): string {
   const diff = Math.floor(Date.now() / 1000) - unix;

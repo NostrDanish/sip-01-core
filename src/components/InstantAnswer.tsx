@@ -11,7 +11,7 @@ import { nip19 } from 'nostr-tools';
 
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { InstantAnswer as InstantAnswerData } from '@/hooks/useInstantAnswer';
+import type { InstantAnswer as InstantAnswerData } from '@/engine/hooks/useInstantAnswer';
 import { useAuthor } from '@/hooks/useAuthor';
 import { sanitizeUrl } from '@/lib/sanitizeUrl';
 import { cn } from '@/lib/utils';

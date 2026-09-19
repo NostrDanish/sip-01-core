@@ -143,18 +143,18 @@ export default defineConfig(
     // cross-layer edge"); it stays covered here for profile/control-plane
     // bans while the moderation seam is deferred to the apps/dsearch split.
     files: [
-      "src/hooks/useProviderSearch.ts",
-      "src/hooks/useSearchIndexer.ts",
-      "src/hooks/useInstantAnswer.ts",
-      "src/hooks/useTrendingTerms.ts",
-      "src/hooks/useRecentIndexedDocs.ts",
-      "src/hooks/useRecentStakes.ts",
-      "src/hooks/useMyNode.ts",
-      "src/hooks/useNetworkStats.ts",
-      "src/hooks/useVotes.ts",
-      "src/hooks/useRelayDiscovery.ts",
-      "src/hooks/useSearchRelayPool.ts",
-      "src/hooks/useSearxngInstances.ts",
+      "src/engine/hooks/useProviderSearch.ts",
+      "src/engine/hooks/useSearchIndexer.ts",
+      "src/engine/hooks/useInstantAnswer.ts",
+      "src/engine/hooks/useTrendingTerms.ts",
+      "src/engine/hooks/useRecentIndexedDocs.ts",
+      "src/engine/hooks/useRecentStakes.ts",
+      "src/engine/hooks/useMyNode.ts",
+      "src/engine/hooks/useNetworkStats.ts",
+      "src/engine/hooks/useVotes.ts",
+      "src/engine/hooks/useRelayDiscovery.ts",
+      "src/engine/hooks/useSearchRelayPool.ts",
+      "src/engine/hooks/useSearxngInstances.ts",
     ],
     rules: {
       "no-restricted-imports": [

@@ -50,8 +50,8 @@ import { useEngineAIStatus } from '@/ai/hooks/useEngineAIStatus';
 import { sendEngineAIAction, testEngineAI } from '@/ai/engineAdmin';
 import { AI_PROVIDERS, getAIProvider } from '@/ai/registry';
 import { useCachedQueries } from '@/hooks/useCachedQueries';
-import { useRecentIndexedDocs } from '@/hooks/useRecentIndexedDocs';
-import { useRecentStakes } from '@/hooks/useRecentStakes';
+import { useRecentIndexedDocs } from '@/engine/hooks/useRecentIndexedDocs';
+import { useRecentStakes } from '@/engine/hooks/useRecentStakes';
 import {
   useAbuseReports,
   useHiddenTargets,

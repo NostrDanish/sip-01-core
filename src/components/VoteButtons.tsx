@@ -13,7 +13,7 @@ import { createContext, useContext, useMemo, useState } from 'react';
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
 
 import { useToast } from '@/hooks/useToast';
-import { useVoteActions, useVoteCounts } from '@/hooks/useVotes';
+import { useVoteActions, useVoteCounts } from '@/engine/hooks/useVotes';
 import { getMyVote, voteTargetFor, type VoteTally } from '@/engine/votes';
 import type { SearchResult } from '@/engine/providers/types';
 import { cn } from '@/lib/utils';

@@ -19,7 +19,7 @@ import { parseQuery } from '@/engine/query/queryParser';
 import { applyHardConstraints } from '@/engine/query/queryEngine';
 import { sortByQueryRelevance } from '@/engine/query/resultRank';
 import { isHiddenResult } from '@/lib/moderation';
-import { useSearchIndexer } from '@/hooks/useSearchIndexer';
+import { useSearchIndexer } from '@/engine/hooks/useSearchIndexer';
 import { useModerationSet } from '@/hooks/useModeration';
 import { useAppContext } from '@/hooks/useAppContext';
 

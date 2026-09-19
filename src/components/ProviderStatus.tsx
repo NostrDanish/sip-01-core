@@ -7,7 +7,7 @@
  * ```
  */
 import { Check, X, Loader2, Minus } from 'lucide-react';
-import type { ProviderState } from '@/hooks/useProviderSearch';
+import type { ProviderState } from '@/engine/hooks/useProviderSearch';
 import { cn } from '@/lib/utils';
 
 interface ProviderStatusProps {
