@@ -24,7 +24,7 @@ import { sanitizeUrl, sanitizeResultUrl } from '@/lib/sanitizeUrl';
 import { useAffiliateRules } from '@/hooks/useAffiliates';
 import { applyAffiliateRules } from '@/lib/affiliates';
 import { trackAffiliateClick } from '@/hooks/useReferrals';
-import type { SearchResult } from '@/lib/providers/types';
+import type { SearchResult } from '@/engine/providers/types';
 import { cn } from '@/lib/utils';
 
 interface UnifiedResultCardProps {

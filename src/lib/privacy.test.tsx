@@ -16,10 +16,10 @@ import { render, waitFor } from '@testing-library/react';
 
 import { classifyQuery, providerAllowlistFor } from '@/lib/queryClassify';
 import { sanitizeUrl, sanitizeResultUrl, sanitizePublicUrl } from '@/lib/sanitizeUrl';
-import { ALL_PROVIDERS } from '@/lib/providers/registry';
+import { ALL_PROVIDERS } from '@/engine/providers/registry';
 import { TestApp } from '@/test/TestApp';
 import { UnifiedResultCard } from '@/components/UnifiedResultCard';
-import type { SearchResult } from '@/lib/providers/types';
+import type { SearchResult } from '@/engine/providers/types';
 
 /** A real, decodable npub (test-only value). */
 const TEST_NPUB = 'npub180cvv07tjdrrgpa0j7j7tmnyl2yr6yr7l8j4s3evf6u64th6gkwsyjh6w6';

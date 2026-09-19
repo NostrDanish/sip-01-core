@@ -9,7 +9,7 @@
 import { describe, it, expect } from 'vitest';
 
 import { sortByQueryRelevance } from './resultRank';
-import type { SearchResult } from './providers/types';
+import type { SearchResult } from '@/engine/providers/types';
 
 function result(partial: Partial<SearchResult> & { id: string }): SearchResult {
   return {

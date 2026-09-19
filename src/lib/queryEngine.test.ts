@@ -15,7 +15,7 @@ import {
 } from '@/lib/queryEngine';
 import { sortByQueryRelevance } from '@/lib/resultRank';
 import type { IndexObservation } from '@/protocol/webIndex';
-import type { SearchResult } from '@/lib/providers/types';
+import type { SearchResult } from '@/engine/providers/types';
 
 /* ------------------------------------------------------------------ */
 /* Deterministic test dataset (SIP-01 observations)                    */

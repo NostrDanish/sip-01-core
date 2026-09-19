@@ -26,7 +26,7 @@
  */
 import type { NostrEvent } from '@nostrify/nostrify';
 
-import type { SearchResult } from '@/lib/providers/types';
+import type { SearchResult } from '@/engine/providers/types';
 import { isValidSubmissionUrl } from '@/lib/contentType';
 import { normalizeQuery } from '@/federation/searchIndex';
 

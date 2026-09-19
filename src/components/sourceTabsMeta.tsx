@@ -1,5 +1,5 @@
 import { Layers, Zap, Globe, Shield, Network, BookOpen, Newspaper, Code, Database } from 'lucide-react';
-import type { SearchSource } from '@/lib/providers/types';
+import type { SearchSource } from '@/engine/providers/types';
 
 export type SourceTabValue = SearchSource | 'all' | 'index' | 'i2p';
 

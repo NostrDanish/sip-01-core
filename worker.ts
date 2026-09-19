@@ -42,7 +42,7 @@ import {
   validateBravePayload,
   buildBraveSearchUrl,
   type BraveProxyEnv,
-} from './src/lib/providers/braveProxy';
+} from './src/engine/providers/braveProxy';
 import { ENGINE_PROFILE } from './src/lib/engine/profile';
 
 /**

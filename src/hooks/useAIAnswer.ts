@@ -14,7 +14,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 
-import type { SearchResult } from '@/lib/providers/types';
+import type { SearchResult } from '@/engine/providers/types';
 import { classifyQuery } from '@/lib/queryClassify';
 import { getAIProvider, ENGINE_PROXY_PROVIDER } from '@/lib/ai/registry';
 import { getAIConfig, resolveAIConfig } from '@/lib/aiConfig';

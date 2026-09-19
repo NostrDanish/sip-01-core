@@ -15,8 +15,8 @@ import { ShieldCheck, ShieldAlert, ShieldX, Settings2, BookOpen } from 'lucide-r
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
 import { useAppContext } from '@/hooks/useAppContext';
-import { getProvidersForPrivacy, getProvidersForSource } from '@/lib/providers/registry';
-import type { PrivacyTier, SearchProvider, SearchSource } from '@/lib/providers/types';
+import { getProvidersForPrivacy, getProvidersForSource } from '@/engine/providers/registry';
+import type { PrivacyTier, SearchProvider, SearchSource } from '@/engine/providers/types';
 import { cn } from '@/lib/utils';
 
 interface PrivacyIndicatorProps {

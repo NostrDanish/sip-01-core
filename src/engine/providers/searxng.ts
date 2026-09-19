@@ -20,7 +20,7 @@ import {
   refreshDiscoveredInstances,
   recordInstanceSuccess,
   recordInstanceFailure,
-} from '@/lib/searxngInstances';
+} from '@/engine/providers/searxngInstances';
 import { proxiedFetch } from '@/lib/corsProxy';
 import { getWebEngineBases } from './enginePriority';
 import { searxngLanguageParam } from '@/lib/languageFilter';

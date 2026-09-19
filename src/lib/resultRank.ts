@@ -27,7 +27,7 @@
 import { wordCoverage, STOP_WORDS, type QueryTerms } from '@/lib/queryMatch';
 import { parseQuery, collectTextLeaves, type ParsedQuery } from '@/lib/queryParser';
 import { evaluateQuery, docFromSearchResult } from '@/lib/queryEngine';
-import type { SearchResult } from '@/lib/providers/types';
+import type { SearchResult } from '@/engine/providers/types';
 
 /** Providers whose placement is contractual, not relevance-driven. */
 const RERANK_EXEMPT = new Set(['keyword-stake']);

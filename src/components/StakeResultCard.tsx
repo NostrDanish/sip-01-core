@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { VoteButtons } from '@/components/VoteButtons';
 import { useAuthor } from '@/hooks/useAuthor';
 import { sanitizeUrl, sanitizeResultUrl } from '@/lib/sanitizeUrl';
-import type { SearchResult } from '@/lib/providers/types';
+import type { SearchResult } from '@/engine/providers/types';
 import { cn } from '@/lib/utils';
 
 interface StakeResultCardProps {

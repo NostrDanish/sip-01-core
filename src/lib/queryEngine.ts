@@ -27,7 +27,7 @@ import {
 } from '@/lib/queryParser';
 import { normalizeText, termMatches, STOP_WORDS } from '@/lib/queryMatch';
 import type { IndexObservation } from '@/protocol/webIndex';
-import type { SearchResult } from '@/lib/providers/types';
+import type { SearchResult } from '@/engine/providers/types';
 
 /* ------------------------------------------------------------------ */
 /* Documents                                                           */

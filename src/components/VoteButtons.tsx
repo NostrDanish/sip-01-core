@@ -15,7 +15,7 @@ import { ThumbsUp, ThumbsDown } from 'lucide-react';
 import { useToast } from '@/hooks/useToast';
 import { useVoteActions, useVoteCounts } from '@/hooks/useVotes';
 import { getMyVote, voteTargetFor, type VoteTally } from '@/lib/votes';
-import type { SearchResult } from '@/lib/providers/types';
+import type { SearchResult } from '@/engine/providers/types';
 import { cn } from '@/lib/utils';
 
 /* ------------------------------------------------------------------ */

@@ -21,7 +21,7 @@ import {
   instanceState,
   type InstanceState,
   type PoolInstance,
-} from '@/lib/searxngInstances';
+} from '@/engine/providers/searxngInstances';
 import { useAppContext } from '@/hooks/useAppContext';
 
 export function useSearxngInstances() {

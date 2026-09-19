@@ -25,7 +25,7 @@
  * relay-level content filtering, not to restrict read access.
  */
 import type { NostrEvent } from '@nostrify/nostrify';
-import type { SearchResult } from '@/lib/providers/types';
+import type { SearchResult } from '@/engine/providers/types';
 import { detectContentType, contentTypeLabel, isValidSubmissionUrl, type ContentType } from '@/lib/contentType';
 /** Kind used for community submissions (NIP-78 application data). */
 export const COMMUNITY_KIND = 30078;

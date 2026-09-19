@@ -38,9 +38,9 @@ import { useAppContext } from '@/hooks/useAppContext';
 import { useSearxngInstances } from '@/hooks/useSearxngInstances';
 import { useSearchRelayPool, useIndexRelayPool, useGitRelayPool, useWikiRelayPool } from '@/hooks/useSearchRelayPool';
 import { useRelayDiscovery } from '@/hooks/useRelayDiscovery';
-import { getBraveApiKey, setBraveApiKey } from '@/lib/providers/brave';
-import { getParallelApiKey, setParallelApiKey } from '@/lib/providers/parallel';
-import { ALL_PROVIDERS } from '@/lib/providers/registry';
+import { getBraveApiKey, setBraveApiKey } from '@/engine/providers/brave';
+import { getParallelApiKey, setParallelApiKey } from '@/engine/providers/parallel';
+import { ALL_PROVIDERS } from '@/engine/providers/registry';
 import { AI_PROVIDERS, getAIProvider } from '@/lib/ai/registry';
 import { getAIConfig, hasOwnAIKey, resolveAIConfig, setAIConfig, type AIConfig } from '@/lib/aiConfig';
 import { ENGINE_PROFILE, PPQ_INVITE_URL } from '@/lib/engine/profile';
@@ -54,7 +54,7 @@ import {
   getIndexerIdentity, regenerateIndexerIdentity, exportIndexerNsec,
 } from '@/protocol/indexerIdentity';
 import { COMMON_LANGUAGES, getBrowserLanguage, normalizeLangCode } from '@/lib/languageFilter';
-import type { PoolInstance, InstanceOrigin } from '@/lib/searxngInstances';
+import type { PoolInstance, InstanceOrigin } from '@/engine/providers/searxngInstances';
 import type { Theme, AccentColor } from '@/contexts/AppContext';
 import { cn } from '@/lib/utils';
 

@@ -41,7 +41,7 @@
  * Readers filter by authors: INDEXER_PUBKEYS to prevent cache poisoning.
  */
 
-import type { SearchResult } from '@/lib/providers/types';
+import type { SearchResult } from '@/engine/providers/types';
 
 /** 0xSearchstr bot pubkey (hex) — the original indexer. */
 export const SEARCHSTR_INDEX_PUBKEY = '12ad55ad1fdb918f5314c9e9a5cd135be9b746e6eee15fd871df131a5677d199';

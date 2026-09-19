@@ -12,8 +12,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
-import type { SearchResult, SearchSource, ProviderSearchResponse } from '@/lib/providers/types';
-import { getProvidersForPrivacy, getProvidersForSource } from '@/lib/providers/registry';
+import type { SearchResult, SearchSource, ProviderSearchResponse } from '@/engine/providers/types';
+import { getProvidersForPrivacy, getProvidersForSource } from '@/engine/providers/registry';
 import { classifyQuery, providerAllowlistFor } from '@/lib/queryClassify';
 import { parseQuery } from '@/lib/queryParser';
 import { applyHardConstraints } from '@/lib/queryEngine';

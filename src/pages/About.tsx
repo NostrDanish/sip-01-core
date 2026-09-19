@@ -176,7 +176,7 @@ export default function About() {
             <div className="mt-6 p-4 rounded-lg bg-muted/50 border border-border/50">
               <p className="text-sm text-muted-foreground">
                 <strong className="text-foreground">Adding a provider:</strong>{' '}
-                Create <code className="text-xs bg-muted px-1 py-0.5 rounded font-mono">src/lib/providers/my-provider.ts</code>,
+                Create <code className="text-xs bg-muted px-1 py-0.5 rounded font-mono">src/engine/providers/my-provider.ts</code>,
                 implement <code className="text-xs bg-muted px-1 py-0.5 rounded font-mono">SearchProvider</code>,
                 and add it to the registry. No core code changes needed.
               </p>

@@ -27,7 +27,7 @@ import { useSearchHotkeys } from '@/hooks/useSearchHotkeys';
 import { ENGINE_PROFILE } from '@/lib/engine/profile';
 import { useAppContext } from '@/hooks/useAppContext';
 import { ALL_SOURCE_TABS } from '@/components/sourceTabsMeta';
-import type { SearchSource } from '@/lib/providers/types';
+import type { SearchSource } from '@/engine/providers/types';
 
 const KNOWN_TAB_IDS = new Set(ALL_SOURCE_TABS.map((t) => t.id as string));
 

@@ -43,7 +43,7 @@ function hexToBytes(hex: string): Uint8Array {
   return bytes;
 }
 
-import type { SearchResult } from '@/lib/providers/types';
+import type { SearchResult } from '@/engine/providers/types';
 import { INDEX_KIND, normalizeQuery } from '@/federation/searchIndex';
 import { getIndexerIdentity } from '@/protocol/indexerIdentity';
 import { buildIndexEvent, normalizeIndexUrl } from '@/protocol/webIndex';

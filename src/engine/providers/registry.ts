@@ -21,7 +21,7 @@
  *      one never requires editing this file.
  *
  * Add a new built-in provider:
- *   1. Create `src/lib/providers/my-provider.ts` implementing `SearchProvider`
+ *   1. Create `src/engine/providers/my-provider.ts` implementing `SearchProvider`
  *   2. Import it here and add to the `ALL_PROVIDERS` array
  *   3. Done — the default registry picks it up automatically
  */

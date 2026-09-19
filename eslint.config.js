@@ -87,7 +87,7 @@ export default defineConfig(
     // (This block repeats the UI bans because its rule config replaces the
     // general lib block's for these files.)
     files: [
-      "src/lib/providers/**/*.ts",
+      "src/engine/providers/**/*.ts",
       "src/lib/engine/**/*.ts",
       "src/lib/ai/**/*.ts",
       "src/lib/queryParser.ts",
@@ -97,7 +97,6 @@ export default defineConfig(
       "src/lib/resultRank.ts",
       "src/lib/calculator.ts",
       "src/lib/votes.ts",
-      "src/lib/searxngInstances.ts",
       "src/lib/aiConfig.ts",
       "src/lib/engineConfig.ts",
       "src/federation/**/*.ts",

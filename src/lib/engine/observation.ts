@@ -9,7 +9,7 @@
  * profile.
  */
 import type { IndexObservationInput } from '@/protocol/webIndex';
-import type { SearchResult } from '@/lib/providers/types';
+import type { SearchResult } from '@/engine/providers/types';
 
 /** Convert a search result into an observation input (for auto-indexing). */
 export function observationFromResult(result: SearchResult, indexerSource: string): IndexObservationInput | null {

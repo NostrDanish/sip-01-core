@@ -92,7 +92,7 @@ export default function DocsPage() {
             { name: 'Structured search syntax', desc: 'Every operator the engine executes locally: boolean, phrases, site:, lang:, before:/after: …', href: 'https://github.com/NostrDanish/Dsearch/blob/main/docs/SEARCH-QUERIES.md' },
             { name: 'SIP-01 implementation guide', desc: 'How to build a compatible publisher, relay, or search node.', href: 'https://github.com/NostrDanish/Dsearch/blob/main/docs/IMPLEMENTATION-GUIDE.md' },
             { name: 'Custom event schemas (NIP.md)', desc: 'Everything Dsearch writes to Nostr: stakes, term signals, submissions, legacy cache.', href: 'https://github.com/NostrDanish/Dsearch/blob/main/NIP.md' },
-            { name: 'Provider architecture', desc: 'Add a search source in ~50 lines: one SearchProvider interface, no core changes.', href: 'https://github.com/NostrDanish/Dsearch/tree/main/src/lib/providers' },
+            { name: 'Provider architecture', desc: 'Add a search source in ~50 lines: one SearchProvider interface, no core changes.', href: 'https://github.com/NostrDanish/Dsearch/tree/main/src/engine/providers' },
           ].map((doc) => (
             <div key={doc.name} className="rounded-xl border border-border/60 bg-card/50 p-4">
               <p className="text-sm font-medium text-foreground mb-1">{doc.name}</p>

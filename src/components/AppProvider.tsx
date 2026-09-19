@@ -2,8 +2,8 @@ import { ReactNode, useEffect } from 'react';
 import { z } from 'zod';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { AppContext, type AppConfig, type AppContextType, type Theme, type AccentColor, type RelayMetadata, type BlossomServerMetadata } from '@/contexts/AppContext';
-import { getBraveApiKey } from '@/lib/providers/brave';
-import { getParallelApiKey } from '@/lib/providers/parallel';
+import { getBraveApiKey } from '@/engine/providers/brave';
+import { getParallelApiKey } from '@/engine/providers/parallel';
 
 interface AppProviderProps {
   children: ReactNode;
