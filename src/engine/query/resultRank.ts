@@ -24,9 +24,9 @@
  * search and leaks the full result set to a third party. This is instant,
  * offline-capable, and private — and it's exactly the ranking rule asked for.
  */
-import { wordCoverage, STOP_WORDS, type QueryTerms } from '@/lib/queryMatch';
-import { parseQuery, collectTextLeaves, type ParsedQuery } from '@/lib/queryParser';
-import { evaluateQuery, docFromSearchResult } from '@/lib/queryEngine';
+import { wordCoverage, STOP_WORDS, type QueryTerms } from '@/engine/query/queryMatch';
+import { parseQuery, collectTextLeaves, type ParsedQuery } from '@/engine/query/queryParser';
+import { evaluateQuery, docFromSearchResult } from '@/engine/query/queryEngine';
 import type { SearchResult } from '@/engine/providers/types';
 
 /** Providers whose placement is contractual, not relevance-driven. */

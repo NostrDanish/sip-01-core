@@ -7,7 +7,7 @@
 import { useMemo } from 'react';
 import { Globe, Type, FileType, Languages, Tag, CalendarDays, Quote, Braces } from 'lucide-react';
 
-import { parseQuery, type FilterClause } from '@/lib/queryParser';
+import { parseQuery, type FilterClause } from '@/engine/query/queryParser';
 import { cn } from '@/lib/utils';
 
 interface QueryInsightsProps {

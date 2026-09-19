@@ -6,14 +6,14 @@
 import { describe, it, expect } from 'vitest';
 import type { NostrEvent } from '@nostrify/nostrify';
 
-import { parseQuery } from '@/lib/queryParser';
+import { parseQuery } from '@/engine/query/queryParser';
 import {
   evaluateQuery,
   docFromObservation,
   parseDateBoundary,
   applyHardConstraints,
-} from '@/lib/queryEngine';
-import { sortByQueryRelevance } from '@/lib/resultRank';
+} from '@/engine/query/queryEngine';
+import { sortByQueryRelevance } from '@/engine/query/resultRank';
 import type { IndexObservation } from '@/protocol/webIndex';
 import type { SearchResult } from '@/engine/providers/types';
 

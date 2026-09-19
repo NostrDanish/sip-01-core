@@ -14,7 +14,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, waitFor } from '@testing-library/react';
 
-import { classifyQuery, providerAllowlistFor } from '@/lib/queryClassify';
+import { classifyQuery, providerAllowlistFor } from '@/engine/query/queryClassify';
 import { sanitizeUrl, sanitizeResultUrl, sanitizePublicUrl } from '@/lib/sanitizeUrl';
 import { ALL_PROVIDERS } from '@/engine/providers/registry';
 import { TestApp } from '@/test/TestApp';

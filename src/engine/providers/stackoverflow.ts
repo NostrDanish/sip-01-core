@@ -5,7 +5,7 @@
  * Returns questions sorted by relevance with vote counts and answer status.
  * CORS-friendly — no proxy needed.
  */
-import { textOnly } from '@/lib/queryParser';
+import { textOnly } from '@/engine/query/queryParser';
 import type { SearchProvider, SearchOptions, ProviderSearchResponse, SearchResult } from './types';
 
 interface SEItem {

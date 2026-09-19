@@ -35,7 +35,7 @@ export default function ProtocolSip02() {
               <strong className="text-foreground">Status: active development, nothing here is a standard yet.</strong>{' '}
               SIP-02 has no published specification. The syntax below is implemented and battle-tested
               inside Dsearch's own query engine
-              (<code className="text-xs bg-muted px-1 py-0.5 rounded font-mono">src/lib/queryParser.ts</code> +{' '}
+              (<code className="text-xs bg-muted px-1 py-0.5 rounded font-mono">src/engine/query/queryParser.ts</code> +{' '}
               <code className="text-xs bg-muted px-1 py-0.5 rounded font-mono">queryEngine.ts</code>) — that
               working implementation is the seed of the future draft, and it already runs on every
               Dsearch search today.
@@ -117,7 +117,7 @@ export default function ProtocolSip02() {
               <a href="https://github.com/NostrDanish/Dsearch" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-mono text-xs">
                 Dsearch repo
               </a>{' '}
-              (<code className="text-xs bg-muted px-1 py-0.5 rounded font-mono">src/lib/queryParser.ts</code>,{' '}
+              (<code className="text-xs bg-muted px-1 py-0.5 rounded font-mono">src/engine/query/queryParser.ts</code>,{' '}
               <code className="text-xs bg-muted px-1 py-0.5 rounded font-mono">queryEngine.ts</code>, tests
               included). When the draft stabilizes it will be published alongside SIP-01 in the{' '}
               <a href="https://github.com/NostrDanish/SIP-01" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-mono text-xs">

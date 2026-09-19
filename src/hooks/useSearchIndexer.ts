@@ -49,7 +49,7 @@ import { getIndexerIdentity } from '@/protocol/indexerIdentity';
 import { buildIndexEvent, normalizeIndexUrl } from '@/protocol/webIndex';
 import { observationFromResult } from '@/lib/engine/observation';
 import { getEngineConfig } from '@/lib/engineConfig';
-import { classifyQuery } from '@/lib/queryClassify';
+import { classifyQuery } from '@/engine/query/queryClassify';
 import {
   TERM_SIGNAL_D_PREFIX,
   TERM_REVEAL_D_PREFIX,

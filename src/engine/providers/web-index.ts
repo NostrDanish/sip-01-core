@@ -27,8 +27,8 @@ import { SEARCH_RELAYS, getSearchRelayUrls, getIndexRelayUrls } from '@/lib/appR
 import { getSearchRelay } from '@/lib/searchRelays';
 import { refreshDiscoveredRelays } from '@/lib/relayDiscovery';
 import { WEB_INDEX_KIND, parseIndexEvent, verifyObservation, type IndexObservation } from '@/protocol/webIndex';
-import { parseQuery } from '@/lib/queryParser';
-import { evaluateQuery, docFromObservation } from '@/lib/queryEngine';
+import { parseQuery } from '@/engine/query/queryParser';
+import { evaluateQuery, docFromObservation } from '@/engine/query/queryEngine';
 import { passesLanguageFilter } from '@/lib/languageFilter';
 import type { SearchProvider, SearchOptions, ProviderSearchResponse, SearchResult } from './types';
 

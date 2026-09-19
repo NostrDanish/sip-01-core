@@ -4,7 +4,7 @@
  */
 import { describe, it, expect } from 'vitest';
 
-import { parseQuery, textOnly, toEngineQuery, type QueryNode } from '@/lib/queryParser';
+import { parseQuery, textOnly, toEngineQuery, type QueryNode } from '@/engine/query/queryParser';
 
 /** Helper: unwrap to the root and assert kind. */
 function root(q: string): QueryNode | undefined {

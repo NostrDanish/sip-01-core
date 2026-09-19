@@ -22,10 +22,10 @@ import { useQuery } from '@tanstack/react-query';
 import { nip19 } from 'nostr-tools';
 import { NIP05 } from '@nostrify/nostrify';
 
-import { evaluateMath, formatMathResult } from '@/lib/calculator';
+import { evaluateMath, formatMathResult } from '@/engine/query/calculator';
 import { sanitizeUrl } from '@/lib/sanitizeUrl';
-import { classifyQuery } from '@/lib/queryClassify';
-import { parseQuery, textOnly } from '@/lib/queryParser';
+import { classifyQuery } from '@/engine/query/queryClassify';
+import { parseQuery, textOnly } from '@/engine/query/queryParser';
 import { documentId, normalizeIndexUrl, parseIndexEvent } from '@/protocol/webIndex';
 import { getIndexRelayUrls } from '@/lib/appRelays';
 import { queryRelayPool } from '@/lib/searchRelays';

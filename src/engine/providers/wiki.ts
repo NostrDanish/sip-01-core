@@ -16,8 +16,8 @@ import { nip19 } from 'nostr-tools';
 
 import { getWikiRelayUrls } from '@/lib/appRelays';
 import { queryRelayPool } from '@/lib/searchRelays';
-import { parseQuery } from '@/lib/queryParser';
-import { evaluateQuery } from '@/lib/queryEngine';
+import { parseQuery } from '@/engine/query/queryParser';
+import { evaluateQuery } from '@/engine/query/queryEngine';
 import type { SearchProvider, SearchOptions, ProviderSearchResponse, SearchResult } from './types';
 
 /** NIP-54 wiki article kind. */

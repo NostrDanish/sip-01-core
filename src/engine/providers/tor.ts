@@ -4,7 +4,7 @@
  * Ahmia is the established, policy-compliant .onion search engine.
  * It provides clearnet access and enforces content policy (CSAM filtering, etc.).
  */
-import { textOnly } from '@/lib/queryParser';
+import { textOnly } from '@/engine/query/queryParser';
 import type { SearchProvider, SearchOptions, ProviderSearchResponse, SearchResult } from './types';
 
 import { proxiedFetch } from '@/lib/corsProxy';

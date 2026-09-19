@@ -11,7 +11,7 @@ import { nip19 } from 'nostr-tools';
 import { SEARCH_RELAYS, getSearchRelayUrls } from '@/lib/appRelays';
 import { getSearchRelay } from '@/lib/searchRelays';
 import { refreshDiscoveredRelays } from '@/lib/relayDiscovery';
-import { textOnly } from '@/lib/queryParser';
+import { textOnly } from '@/engine/query/queryParser';
 import { sanitizeUrl } from '@/lib/sanitizeUrl';
 import type { SearchProvider, SearchOptions, ProviderSearchResponse, SearchResult } from './types';
 

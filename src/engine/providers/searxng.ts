@@ -24,7 +24,7 @@ import {
 import { proxiedFetch } from '@/lib/corsProxy';
 import { getWebEngineBases } from './enginePriority';
 import { searxngLanguageParam } from '@/lib/languageFilter';
-import { toEngineQuery } from '@/lib/queryParser';
+import { toEngineQuery } from '@/engine/query/queryParser';
 
 /**
  * How many instances to race in the first parallel batch. Public instances

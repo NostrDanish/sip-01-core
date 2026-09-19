@@ -24,8 +24,8 @@ import { nip19 } from 'nostr-tools';
 
 import { getGitRelayUrls } from '@/lib/appRelays';
 import { queryRelayPool } from '@/lib/searchRelays';
-import { parseQuery } from '@/lib/queryParser';
-import { evaluateQuery } from '@/lib/queryEngine';
+import { parseQuery } from '@/engine/query/queryParser';
+import { evaluateQuery } from '@/engine/query/queryEngine';
 import type { SearchProvider, SearchOptions, ProviderSearchResponse, SearchResult } from './types';
 
 /** NIP-34 kinds we surface: repos, patches, PRs, issues. */

@@ -26,7 +26,7 @@ import {
   type VoteDirection,
   type VoteTally,
   type VoteTarget,
-} from '@/lib/votes';
+} from '@/engine/votes';
 
 /* Local hex helper (same as the indexer modules). */
 function hexToBytes(hex: string): Uint8Array {

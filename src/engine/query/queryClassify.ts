@@ -9,7 +9,7 @@
  */
 import { nip19 } from 'nostr-tools';
 
-import { isMathQuery } from '@/lib/calculator';
+import { isMathQuery } from '@/engine/query/calculator';
 
 export type QueryClass = 'nip19' | 'nip05' | 'url' | 'math' | 'text';
 

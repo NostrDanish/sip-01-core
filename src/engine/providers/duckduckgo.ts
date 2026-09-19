@@ -10,7 +10,7 @@
 import type { SearchProvider, SearchOptions, ProviderSearchResponse, SearchResult } from './types';
 import { proxiedFetch } from '@/lib/corsProxy';
 import { getWebEngineBases } from './enginePriority';
-import { toEngineQuery } from '@/lib/queryParser';
+import { toEngineQuery } from '@/engine/query/queryParser';
 
 interface DDGRawResult {
   title: string;

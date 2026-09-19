@@ -96,7 +96,7 @@ export interface SearchOptions {
    * afterwards regardless, so a provider misunderstanding an operator can
    * never produce an incorrect final result.
    */
-  parsed?: import('@/lib/queryParser').ParsedQuery;
+  parsed?: import('@/engine/query/queryParser').ParsedQuery;
 }
 
 /** The result of a provider search call. */

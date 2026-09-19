@@ -4,7 +4,7 @@
  * Queries the public Algolia-powered HN search API. No API key needed.
  * Returns stories (posts) sorted by relevance.
  */
-import { textOnly } from '@/lib/queryParser';
+import { textOnly } from '@/engine/query/queryParser';
 import type { SearchProvider, SearchOptions, ProviderSearchResponse, SearchResult } from './types';
 
 interface HNHit {

@@ -18,7 +18,7 @@
  */
 import type { SearchProvider, SearchOptions, ProviderSearchResponse, SearchResult } from './types';
 import { proxiedFetch } from '@/lib/corsProxy';
-import { textOnly, toEngineQuery } from '@/lib/queryParser';
+import { textOnly, toEngineQuery } from '@/engine/query/queryParser';
 import { readStoredWithLegacy, writeStoredCanonical } from '@/lib/storageMigration';
 
 const LS_PARALLEL_KEY = 'dsearch:parallel-api-key';

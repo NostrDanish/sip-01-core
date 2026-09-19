@@ -17,7 +17,7 @@ import { proxiedFetch } from '@/lib/corsProxy';
 import { getWebEngineBases } from './enginePriority';
 import { getBraveApiKey } from './braveKey';
 import { braveLanguageParam } from '@/lib/languageFilter';
-import { toEngineQuery } from '@/lib/queryParser';
+import { toEngineQuery } from '@/engine/query/queryParser';
 import { ENGINE_AI_BASE } from '@/lib/aiConfig';
 
 // BYOK key storage lives in the braveKey leaf (cycle break); re-exported

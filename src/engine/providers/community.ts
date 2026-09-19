@@ -24,8 +24,8 @@ import {
   parseNostraEvent,
   parseBookmarkEvent,
 } from '@/federation/communityIndex';
-import { parseQuery } from '@/lib/queryParser';
-import { evaluateQuery, docFromSearchResult } from '@/lib/queryEngine';
+import { parseQuery } from '@/engine/query/queryParser';
+import { evaluateQuery, docFromSearchResult } from '@/engine/query/queryEngine';
 import type { SearchProvider, SearchOptions, ProviderSearchResponse, SearchResult } from './types';
 
 /** How many recent events to pull per family before client-side filtering. */

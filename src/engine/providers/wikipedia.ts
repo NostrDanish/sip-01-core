@@ -8,7 +8,7 @@
  * da.wikipedia.org, …), so a result language filter maps directly to
  * querying the preferred languages' wikis (first two) and merging.
  */
-import { textOnly } from '@/lib/queryParser';
+import { textOnly } from '@/engine/query/queryParser';
 import type { SearchProvider, SearchOptions, ProviderSearchResponse, SearchResult } from './types';
 
 interface WikiSearchResult {

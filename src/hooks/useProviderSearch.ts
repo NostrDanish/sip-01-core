@@ -14,10 +14,10 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import type { SearchResult, SearchSource, ProviderSearchResponse } from '@/engine/providers/types';
 import { getProvidersForPrivacy, getProvidersForSource } from '@/engine/providers/registry';
-import { classifyQuery, providerAllowlistFor } from '@/lib/queryClassify';
-import { parseQuery } from '@/lib/queryParser';
-import { applyHardConstraints } from '@/lib/queryEngine';
-import { sortByQueryRelevance } from '@/lib/resultRank';
+import { classifyQuery, providerAllowlistFor } from '@/engine/query/queryClassify';
+import { parseQuery } from '@/engine/query/queryParser';
+import { applyHardConstraints } from '@/engine/query/queryEngine';
+import { sortByQueryRelevance } from '@/engine/query/resultRank';
 import { isHiddenResult } from '@/lib/moderation';
 import { useSearchIndexer } from '@/hooks/useSearchIndexer';
 import { useModerationSet } from '@/hooks/useModeration';

@@ -24,8 +24,8 @@ import {
   type FilterField,
   type ParsedQuery,
   type QueryNode,
-} from '@/lib/queryParser';
-import { normalizeText, termMatches, STOP_WORDS } from '@/lib/queryMatch';
+} from '@/engine/query/queryParser';
+import { normalizeText, termMatches, STOP_WORDS } from '@/engine/query/queryMatch';
 import type { IndexObservation } from '@/protocol/webIndex';
 import type { SearchResult } from '@/engine/providers/types';
 
