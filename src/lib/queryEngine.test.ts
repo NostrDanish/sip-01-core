@@ -406,12 +406,18 @@ describe('ranking ladder (resultRank)', () => {
   it('orders phrase > title > full coverage > partial', () => {
     const partial = mkResult('partial', { title: 'Some page', snippet: 'A decentralized system' });
     const full = mkResult('full', { title: 'Some page', snippet: 'Decentralized systems, search engines' });
-    const title = mkResult('title', { title: 'Decentralized Search explained', snippet: 'A guide' });
+    // Title fixture: both query words in the title but NOT adjacent — a
+    // pure title-term hit. (An adjacent pair would be a phrase hit in the
+    // title, which correctly outranks a phrase in the body.)
+    const title = mkResult('title', { title: 'Decentralized web search explained', snippet: 'A guide' });
     // phrase and title land inside the ±5 recency tie-band at this base —
     // the phrase fixture wins the band on recency (deterministic).
     const phrase = { ...mkResult('phrase', { title: 'Some page', snippet: 'A decentralized search engine' }), timestamp: 1001 };
 
-    const sorted = sortByQueryRelevance([partial, full, title, phrase], '"decentralized search"');
+    // Unquoted: the whole-query phrase probe fires for the phrase fixture
+    // (a quoted query hard-gates every non-phrase doc to match=false,
+    // which zeroes the title/phrase signals the ladder is built from).
+    const sorted = sortByQueryRelevance([partial, full, title, phrase], 'decentralized search');
     expect(sorted.map((r) => r.id)).toEqual(['phrase', 'title', 'full', 'partial']);
   });
 
