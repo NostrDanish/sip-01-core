@@ -33,7 +33,7 @@ import {
 import { useToast } from '@/hooks/useToast';
 import { useTheme } from '@/hooks/useTheme';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
-import { ALL_SOURCE_TABS, DEFAULT_TAB_CONFIG } from '@/components/SourceTabs';
+import { ALL_SOURCE_TABS, DEFAULT_TAB_CONFIG } from '@/components/sourceTabsMeta';
 import { useAppContext } from '@/hooks/useAppContext';
 import { useSearxngInstances } from '@/hooks/useSearxngInstances';
 import { useSearchRelayPool, useIndexRelayPool, useGitRelayPool, useWikiRelayPool } from '@/hooks/useSearchRelayPool';
