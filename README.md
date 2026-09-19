@@ -3,6 +3,15 @@
 **The reusable reference implementation of the SIP-01 Search Index Protocol —
 engine, contracts, providers, and AI layer that any search engine can build on.**
 
+## Documentation
+
+Full guides and reference material live in [`docs/`](docs/README.md) — start at
+the [table of contents](docs/SUMMARY.md): getting started, the SIP-01 primer,
+the build-an-engine guide, provider/AI/relay/identity guides, and the API,
+conformance, versioning, and security references. The repo is **GitBook-ready**:
+the root `.gitbook.yaml` points Git Sync at `docs/`, so connecting this repo at
+gitbook.com renders the space directly — and every page also reads on GitHub.
+
 ## What SIP-01 is
 
 [SIP-01](https://github.com/NostrDanish/SIP-01) (Search Index Protocol) is an
@@ -86,7 +95,7 @@ The per-layer contract with exact export lists is
 [`PACKAGE_BOUNDARIES.md`](PACKAGE_BOUNDARIES.md); the architecture deep-dive
 is [`ARCHITECTURE.md`](ARCHITECTURE.md); the implementation guide is
 [`docs/IMPLEMENTATION-GUIDE.md`](docs/IMPLEMENTATION-GUIDE.md); query
-operators are documented in [`docs/SEARCH-QUERIES.md`](docs/SEARCH-QUERIES.md).
+operators are documented in [`docs/guides/query-syntax.md`](docs/guides/query-syntax.md).
 
 ## The replacement seams (how a host plugs in)
 
