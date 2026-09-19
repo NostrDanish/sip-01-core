@@ -13,7 +13,7 @@ import { type NostrEvent, type NostrFilter } from '@nostrify/nostrify';
 
 import { queryRelayPool, getSearchRelay } from '@/lib/searchRelays';
 import { getIndexRelayUrls, getSearchRelayUrls } from '@/lib/appRelays';
-import { getIndexerIdentity } from '@/lib/indexerIdentity';
+import { getIndexerIdentity } from '@/protocol/indexerIdentity';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useNostrPublish } from '@/hooks/useNostrPublish';
 import { useAppContext } from '@/hooks/useAppContext';

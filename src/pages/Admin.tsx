@@ -76,7 +76,7 @@ import {
   type AppRole,
   type HiddenTarget,
 } from '@/lib/moderation';
-import { normalizeIndexUrl } from '@/lib/webIndex';
+import { normalizeIndexUrl } from '@/protocol/webIndex';
 import { getIndexRelayUrls, getSearchRelayUrls } from '@/lib/appRelays';
 
 function timeAgo(ts: number): string {

@@ -48,7 +48,7 @@ import type { AIModel } from '@/lib/ai/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   getIndexerIdentity, regenerateIndexerIdentity, exportIndexerNsec,
-} from '@/lib/indexerIdentity';
+} from '@/protocol/indexerIdentity';
 import { COMMON_LANGUAGES, getBrowserLanguage, normalizeLangCode } from '@/lib/languageFilter';
 import type { PoolInstance, InstanceOrigin } from '@/lib/searxngInstances';
 import type { Theme, AccentColor } from '@/contexts/AppContext';

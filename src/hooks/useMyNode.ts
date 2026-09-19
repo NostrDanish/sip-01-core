@@ -10,8 +10,8 @@ import type { NostrFilter } from '@nostrify/nostrify';
 
 import { getIndexRelayUrls } from '@/lib/appRelays';
 import { queryRelayPool } from '@/lib/searchRelays';
-import { getIndexerIdentity } from '@/lib/indexerIdentity';
-import { WEB_INDEX_KIND, parseIndexEvent, type IndexObservation } from '@/lib/webIndex';
+import { getIndexerIdentity } from '@/protocol/indexerIdentity';
+import { WEB_INDEX_KIND, parseIndexEvent, type IndexObservation } from '@/protocol/webIndex';
 
 export interface MyObservation {
   d: string;

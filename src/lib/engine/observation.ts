@@ -8,7 +8,7 @@
  * only). The caller injects it — the protocol layer never imports an app
  * profile.
  */
-import type { IndexObservationInput } from '@/lib/webIndex';
+import type { IndexObservationInput } from '@/protocol/webIndex';
 import type { SearchResult } from '@/lib/providers/types';
 
 /** Convert a search result into an observation input (for auto-indexing). */

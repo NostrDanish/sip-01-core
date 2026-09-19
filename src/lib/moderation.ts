@@ -30,7 +30,7 @@
  */
 import type { NostrEvent } from '@nostrify/nostrify';
 
-import { normalizeIndexUrl } from '@/lib/webIndex';
+import { normalizeIndexUrl } from '@/protocol/webIndex';
 import { APP_RELAYS, getIndexRelayUrls, getSearchRelayUrls } from '@/lib/appRelays';
 import {
   OWNER_PUBKEY,

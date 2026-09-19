@@ -11,7 +11,7 @@ import type { NostrEvent, NostrFilter } from '@nostrify/nostrify';
 
 import { getSearchRelayUrls } from '@/lib/appRelays';
 import { queryRelayPool } from '@/lib/searchRelays';
-import { WEB_INDEX_KIND, parseIndexEvent, type IndexObservation } from '@/lib/webIndex';
+import { WEB_INDEX_KIND, parseIndexEvent, type IndexObservation } from '@/protocol/webIndex';
 
 export interface IndexedDocEntry {
   /** Canonical URL. */

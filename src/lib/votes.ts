@@ -17,7 +17,7 @@
  */
 import type { NostrEvent } from '@nostrify/nostrify';
 
-import { normalizeIndexUrl } from '@/lib/webIndex';
+import { normalizeIndexUrl } from '@/protocol/webIndex';
 import { readStoredWithLegacy, writeStoredCanonical } from '@/lib/storageMigration';
 
 /** NIP-25 reaction kind. */

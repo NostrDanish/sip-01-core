@@ -26,7 +26,7 @@ import type { NostrEvent, NostrFilter } from '@nostrify/nostrify';
 import { SEARCH_RELAYS, getSearchRelayUrls, getIndexRelayUrls } from '@/lib/appRelays';
 import { getSearchRelay } from '@/lib/searchRelays';
 import { refreshDiscoveredRelays } from '@/lib/relayDiscovery';
-import { WEB_INDEX_KIND, parseIndexEvent, verifyObservation, type IndexObservation } from '@/lib/webIndex';
+import { WEB_INDEX_KIND, parseIndexEvent, verifyObservation, type IndexObservation } from '@/protocol/webIndex';
 import { parseQuery } from '@/lib/queryParser';
 import { evaluateQuery, docFromObservation } from '@/lib/queryEngine';
 import { passesLanguageFilter } from '@/lib/languageFilter';

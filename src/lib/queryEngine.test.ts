@@ -14,7 +14,7 @@ import {
   applyHardConstraints,
 } from '@/lib/queryEngine';
 import { sortByQueryRelevance } from '@/lib/resultRank';
-import type { IndexObservation } from '@/lib/webIndex';
+import type { IndexObservation } from '@/protocol/webIndex';
 import type { SearchResult } from '@/lib/providers/types';
 
 /* ------------------------------------------------------------------ */

@@ -8,7 +8,7 @@
  * What it NEVER publishes:
  *   - the search query (no query text, no correlation between user and URL);
  *   - the user's personal Nostr identity (events are signed by this device's
- *     dedicated indexing identity — see src/lib/indexerIdentity.ts);
+ *     dedicated indexing identity — see src/protocol/indexerIdentity.ts);
  *   - Nostr-native results (they already live on relays).
  *
  * Every browser is an independent indexer — there is no central signing key.
@@ -45,8 +45,8 @@ function hexToBytes(hex: string): Uint8Array {
 
 import type { SearchResult } from '@/lib/providers/types';
 import { INDEX_KIND, normalizeQuery } from '@/lib/searchIndex';
-import { getIndexerIdentity } from '@/lib/indexerIdentity';
-import { buildIndexEvent, normalizeIndexUrl } from '@/lib/webIndex';
+import { getIndexerIdentity } from '@/protocol/indexerIdentity';
+import { buildIndexEvent, normalizeIndexUrl } from '@/protocol/webIndex';
 import { observationFromResult } from '@/lib/engine/observation';
 import { ENGINE_PROFILE } from '@/lib/engine/profile';
 import { classifyQuery } from '@/lib/queryClassify';

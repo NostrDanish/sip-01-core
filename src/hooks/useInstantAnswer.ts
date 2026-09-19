@@ -26,7 +26,7 @@ import { evaluateMath, formatMathResult, isMathQuery } from '@/lib/calculator';
 import { sanitizeUrl } from '@/lib/sanitizeUrl';
 import { classifyQuery } from '@/lib/queryClassify';
 import { parseQuery, textOnly } from '@/lib/queryParser';
-import { documentId, normalizeIndexUrl, parseIndexEvent } from '@/lib/webIndex';
+import { documentId, normalizeIndexUrl, parseIndexEvent } from '@/protocol/webIndex';
 import { getIndexRelayUrls } from '@/lib/appRelays';
 import { queryRelayPool } from '@/lib/searchRelays';
 import { proxiedFetch } from '@/lib/corsProxy';

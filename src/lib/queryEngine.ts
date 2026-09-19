@@ -27,7 +27,7 @@ import {
   type QueryNode,
 } from '@/lib/queryParser';
 import { normalizeText, termMatches, STOP_WORDS } from '@/lib/queryMatch';
-import type { IndexObservation } from '@/lib/webIndex';
+import type { IndexObservation } from '@/protocol/webIndex';
 import type { SearchResult } from '@/lib/providers/types';
 
 /* ------------------------------------------------------------------ */
