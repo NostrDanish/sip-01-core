@@ -14,7 +14,7 @@
  * position (`base - index * 0.5`) and the merge pass reweights by query-word
  * coverage.
  */
-import { getBraveApiKey } from './brave';
+import { getBraveApiKey } from './braveKey';
 import { getEngineConfig } from '@/lib/engineConfig';
 
 export interface WebEngineBases {

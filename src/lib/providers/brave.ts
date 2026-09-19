@@ -15,35 +15,18 @@
 import type { SearchProvider, SearchOptions, ProviderSearchResponse, SearchResult } from './types';
 import { proxiedFetch } from '@/lib/corsProxy';
 import { getWebEngineBases } from './enginePriority';
+import { getBraveApiKey } from './braveKey';
 import { braveLanguageParam } from '@/lib/languageFilter';
 import { toEngineQuery } from '@/lib/queryParser';
 import { ENGINE_AI_BASE } from '@/lib/aiConfig';
-import { readStoredWithLegacy, writeStoredCanonical } from '@/lib/storageMigration';
 
-const LS_BRAVE_KEY = 'dsearch:brave-api-key';
-const LEGACY_LS_BRAVE_KEY = 'presearchstr:brave-api-key';
+// BYOK key storage lives in the braveKey leaf (cycle break); re-exported
+// here so existing consumers keep their import path.
+export { getBraveApiKey, setBraveApiKey } from './braveKey';
+
 const API_URL = 'https://api.search.brave.com/res/v1/web/search';
 // Engine Brave lives on the same worker as engine AI (/api/ai ↔ /api/search).
 const ENGINE_BRAVE_URL = `${ENGINE_AI_BASE.replace(/\/ai$/, '')}/search/brave`;
-
-/** Read the user's Brave API key (empty when unset). */
-export function getBraveApiKey(): string {
-  try {
-    return (readStoredWithLegacy(LS_BRAVE_KEY, LEGACY_LS_BRAVE_KEY) ?? '').trim();
-  } catch {
-    return '';
-  }
-}
-
-/** Store/clear the user's Brave API key (Settings). */
-export function setBraveApiKey(key: string): void {
-  try {
-    const trimmed = key.trim();
-    writeStoredCanonical(LS_BRAVE_KEY, LEGACY_LS_BRAVE_KEY, trimmed || null);
-  } catch {
-    // Storage unavailable — the provider just stays dormant.
-  }
-}
 
 interface BraveWebResult {
   title?: string;
