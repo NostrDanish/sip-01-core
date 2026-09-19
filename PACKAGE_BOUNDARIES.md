@@ -61,7 +61,7 @@ change only with a spec revision) · **stable** (public API, semver-style care)
 | Public API | `AIProvider` (4 methods), `AI_PROVIDERS` catalog, `createOpenAICompatibleProvider`, `resolveAIConfig` (credential precedence), `useAIAnswer`, engine-proxy isomorph (`engineProxy.ts`: `readEngineConfig` / `validateChatPayload` / `buildUpstreamBody` / `verifyAdminAuth` / `applyAdminAction` … — all host defaults are explicit `EngineAIDefaults` parameters) |
 | May depend on | core (`corsProxy`, `engineConfig`) |
 | Must NOT depend on | UI, app profile, app control plane; never hard-requires one vendor |
-| App-side remainder | `COMMUNITY_AI_*` constants (Dsearch's public free-tier key — moves to the app layer in the staged split) |
+| App-side remainder | none — Dsearch's community free-tier key (`ai.community`) and PPQ invite URL live in the app profile (`engine/profile.ts`) and reach this layer only via the engineConfig seam |
 | Stability | interface **stable**, provider catalog **experimental** |
 
 ## Application — Dsearch (being isolated; see extraction map)

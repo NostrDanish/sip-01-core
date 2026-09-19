@@ -41,8 +41,12 @@ import { useRelayDiscovery } from '@/hooks/useRelayDiscovery';
 import { getBraveApiKey, setBraveApiKey } from '@/lib/providers/brave';
 import { getParallelApiKey, setParallelApiKey } from '@/lib/providers/parallel';
 import { ALL_PROVIDERS } from '@/lib/providers/registry';
-import { AI_PROVIDERS, getAIProvider, PPQ_INVITE_URL } from '@/lib/ai/registry';
-import { COMMUNITY_AI_MODEL, getAIConfig, hasOwnAIKey, resolveAIConfig, setAIConfig, type AIConfig } from '@/lib/aiConfig';
+import { AI_PROVIDERS, getAIProvider } from '@/lib/ai/registry';
+import { getAIConfig, hasOwnAIKey, resolveAIConfig, setAIConfig, type AIConfig } from '@/lib/aiConfig';
+import { ENGINE_PROFILE, PPQ_INVITE_URL } from '@/lib/engine/profile';
+
+/** This engine's community free-tier model (locked on that tier). */
+const COMMUNITY_AI_MODEL = ENGINE_PROFILE.ai.community?.model ?? '';
 import { useEngineAIStatus } from '@/hooks/useEngineAIStatus';
 import type { AIModel } from '@/lib/ai/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';

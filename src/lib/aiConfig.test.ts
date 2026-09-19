@@ -15,13 +15,13 @@ import {
   hasOwnAIKey,
   getDefaultAIConfig,
   ENGINE_AI_BASE,
-  COMMUNITY_AI_KEY,
-  COMMUNITY_AI_ENDPOINT,
-  COMMUNITY_AI_MODEL,
   type EngineAIStatus,
 } from './aiConfig';
 import { configureEngine, resetEngineConfig } from './engineConfig';
 import { ENGINE_PROFILE } from './engine/profile';
+
+/** The Dsearch profile carries the community free tier (its public key). */
+const COMMUNITY = ENGINE_PROFILE.ai.community!;
 
 /** Mirror the app's bootstrap (src/App.tsx): the host injects its profile. */
 function configureTestEngine(): void {
@@ -53,9 +53,9 @@ describe('resolveAIConfig precedence (configured host)', () => {
   it('1. no engine + no user key → built-in free tier (locked provider+model)', () => {
     const r = resolveAIConfig({ ...getDefaultAIConfig(), apiKey: '' }, ENGINE_OFF);
     expect(r.tier).toBe('community');
-    expect(r.apiKey).toBe(COMMUNITY_AI_KEY); // public by design (rate-limited)
-    expect(r.model).toBe(COMMUNITY_AI_MODEL); // locked — user's 'auto' ignored
-    expect(r.endpoint).toBe(COMMUNITY_AI_ENDPOINT);
+    expect(r.apiKey).toBe(COMMUNITY.apiKey); // public by design (rate-limited)
+    expect(r.model).toBe(COMMUNITY.model); // locked — user's 'auto' ignored
+    expect(r.endpoint).toBe(COMMUNITY.endpoint);
   });
 
   it('1b. static deploy (no status endpoint) still gets the built-in tier', () => {
@@ -85,6 +85,23 @@ describe('resolveAIConfig precedence (configured host)', () => {
     const r = resolveAIConfig({ ...getDefaultAIConfig(), apiKey: 'sk-user-own-key' }, ENGINE_ON);
     expect(r.tier).toBe('user');
     expect(r.apiKey).toBe('sk-user-own-key');
+  });
+
+  it('host profile without a community tier → AI unavailable (no baked-in key)', () => {
+    // The generic layer holds no credentials: a host that injects a profile
+    // without `ai.community` gets no community tier.
+    const { community: _community, ...aiNoCommunity } = ENGINE_PROFILE.ai;
+    configureEngine({
+      id: ENGINE_PROFILE.id,
+      search: {
+        brave: ENGINE_PROFILE.search.brave,
+        indexerSource: ENGINE_PROFILE.search.indexerSource,
+      },
+      ai: aiNoCommunity,
+    });
+    const r = resolveAIConfig({ ...getDefaultAIConfig(), apiKey: '' }, ENGINE_OFF);
+    expect(r.tier).toBe('unavailable');
+    expect(r.apiKey).toBe('');
   });
 
   it('7. engine disabled by operator → falls through to the built-in tier', () => {

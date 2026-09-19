@@ -15,12 +15,14 @@
  *      proxy with NO key; the key is never in the bundle, localStorage,
  *      or any API response. Available only when the operator deployed the
  *      worker AND configured it (status comes from GET /api/ai/status).
- *   3. BUILT-IN FALLBACK — a shared, rate-limited PPQ key with a locked
- *      model, so AI answers work out of the box on any deployment
- *      (including static hosting with no worker). The key is public by
- *      design — it ships in the bundle and must stay rate-limited; the
- *      engine tier exists for operators who want a private key.
- *   4. AI UNAVAILABLE — only if the built-in key is removed (forks).
+ *   3. COMMUNITY FALLBACK — the host engine's shared, rate-limited key with
+ *      a locked model (injected via the engineConfig seam, e.g. Dsearch's
+ *      profile), so AI answers work out of the box on that engine's
+ *      deployments (including static hosting with no worker). The key is
+ *      public by design — it ships in the host's bundle and must stay
+ *      rate-limited; the engine tier exists for operators who want a
+ *      private key.
+ *   4. AI UNAVAILABLE — when the host supplies no community tier.
  */
 
 import { getAIProvider } from '@/lib/ai/registry';
@@ -45,15 +47,6 @@ export type { EngineAIStatus } from '@/lib/ai/engineProxy';
  */
 export const ENGINE_AI_BASE: string =
   (import.meta.env.VITE_ENGINE_API_BASE as string | undefined)?.replace(/\/$/, '') || '/api/ai';
-
-/** Built-in free tier — shared, rate-limited PPQ key. Provider + model are
- *  locked on this tier. PUBLIC BY DESIGN (ships in the bundle): it exists so
- *  AI works with zero setup; abuse is bounded by the key's own rate limits.
- *  Forks: empty the key to disable the tier (falls through to 'unavailable'). */
-export const COMMUNITY_AI_PROVIDER_ID = 'ppq';
-export const COMMUNITY_AI_ENDPOINT = 'https://api.ppq.ai/v1';
-export const COMMUNITY_AI_KEY = 'sk-VPVVNlf79DvGjUfjjrHeFT';
-export const COMMUNITY_AI_MODEL = 'qwen/qwen-2.5-7b-instruct';
 
 const LS_KEY = 'dsearch:ai-config';
 const LEGACY_LS_KEY = 'presearchstr:ai-config';
@@ -154,12 +147,14 @@ export function resolveAIConfig(cfg: AIConfig, engine?: EngineAIStatus | null): 
     };
   }
 
-  if (COMMUNITY_AI_KEY) {
+  // Host-injected community tier (the engine profile's shared free key).
+  const community = getEngineConfig().ai.community;
+  if (community?.apiKey) {
     return {
-      providerId: COMMUNITY_AI_PROVIDER_ID,
-      endpoint: COMMUNITY_AI_ENDPOINT,
-      apiKey: COMMUNITY_AI_KEY,
-      model: COMMUNITY_AI_MODEL, // locked on this tier — user's model choice ignored
+      providerId: community.providerId,
+      endpoint: community.endpoint,
+      apiKey: community.apiKey,
+      model: community.model, // locked on this tier — user's model choice ignored
       tier: 'community',
     };
   }

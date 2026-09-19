@@ -83,6 +83,17 @@ export interface EngineUiConfig {
   footerTagline: string;
 }
 
+export interface EngineCommunityAiConfig {
+  /** OpenAI-compatible provider id the shared key belongs to. */
+  providerId: string;
+  /** OpenAI-compatible endpoint for the shared key. */
+  endpoint: string;
+  /** Shared key. PUBLIC BY DESIGN — ships in the bundle, rate-limited. */
+  apiKey: string;
+  /** Locked model on this tier — the user's model choice is ignored. */
+  model: string;
+}
+
 export interface EngineAiConfig {
   /** AI answers on for first-time visitors (still opt-out in Settings). */
   enabledDefault: boolean;
@@ -99,6 +110,12 @@ export interface EngineAiConfig {
    * clients cannot override it. Also used client-side for user-BYOK calls.
    */
   systemPrompt: string;
+  /**
+   * Host-provided community free tier — a shared, rate-limited key so AI
+   * answers work out of the box on any deployment of THIS engine. Omit it
+   * to disable the tier (resolution falls through to 'unavailable').
+   */
+  community?: EngineCommunityAiConfig;
 }
 
 export interface EngineProfile {
@@ -198,8 +215,22 @@ export const DSEARCH_PROFILE: EngineProfile = {
     endpoint: 'https://api.ppq.ai/v1',
     model: 'auto',
     systemPrompt: DSEARCH_SYSTEM_PROMPT,
+    // Dsearch's community free tier — shared, rate-limited PPQ key with a
+    // locked model, so AI answers work with zero setup on any Dsearch
+    // deployment. PUBLIC BY DESIGN (ships in the bundle); abuse is bounded
+    // by the key's own rate limits. This is Dsearch's credential — other
+    // engines on this core supply their own (or omit it).
+    community: {
+      providerId: 'ppq',
+      endpoint: 'https://api.ppq.ai/v1',
+      apiKey: 'sk-VPVVNlf79DvGjUfjjrHeFT',
+      model: 'qwen/qwen-2.5-7b-instruct',
+    },
   },
 };
+
+/** Dsearch's PPQ invite link — supports the project. Use wherever PPQ is linked. */
+export const PPQ_INVITE_URL = 'https://ppq.ai/invite/949880ca';
 
 /**
  * Active engine for this deployment.

@@ -9,7 +9,11 @@ describe('engine profile', () => {
   });
 
   it('does not embed API secrets', () => {
-    const json = JSON.stringify(ENGINE_PROFILE);
+    // The only key-shaped string allowed is the community free-tier key,
+    // which is public BY DESIGN (shared, rate-limited, ships in the bundle).
+    const { community, ...aiWithoutCommunity } = ENGINE_PROFILE.ai;
+    expect(community?.apiKey).toMatch(/^sk-/); // the documented public key
+    const json = JSON.stringify({ ...ENGINE_PROFILE, ai: aiWithoutCommunity });
     expect(json).not.toMatch(/sk-/);
     expect(json).not.toMatch(/BRAVE_API_KEY/);
     expect(json).not.toMatch(/AI_API_KEY/);

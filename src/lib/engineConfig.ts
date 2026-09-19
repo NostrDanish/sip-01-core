@@ -55,6 +55,17 @@ export interface EngineRuntimeConfig {
     model: string;
     /** Production system prompt (engine policy, not per-request data). */
     systemPrompt: string;
+    /**
+     * Host-provided community free tier — a shared, rate-limited key
+     * (public by design; it ships in the host's bundle). Omit to disable
+     * the tier: resolution falls through to 'unavailable'.
+     */
+    community?: {
+      providerId: string;
+      endpoint: string;
+      apiKey: string;
+      model: string;
+    };
   };
 }
 
