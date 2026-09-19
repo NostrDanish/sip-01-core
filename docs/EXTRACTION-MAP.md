@@ -20,6 +20,10 @@ come before physical moves, and every phase must leave the test gate green
 | 3-M2 | `5c55bc4` | Physical home for the federation layer: `src/lib/{searchIndex,communityIndex,keywordStakes,termSignals}.ts` (+tests) → `src/federation/` |
 | 3-M3 | `079f85c` | `src/lib/providers/` → `src/engine/providers/`; `src/lib/searxngInstances.ts` → `src/engine/providers/` |
 | 3-M4 | `ebbb3ae` | Query/rank stack → `src/engine/query/` (`queryParser`, `queryEngine`, `queryMatch`, `queryClassify`, `resultRank`, `calculator` +tests); `src/lib/votes.ts` → `src/engine/` |
+| 3-M5 | `bae8b82` | Physical home for the AI layer: `src/lib/ai/` → `src/ai/`, `src/lib/aiConfig.ts` (+test) → `src/ai/`, `useAIAnswer`/`useEngineAIStatus` → `src/ai/hooks/` |
+| 3-M6 | `d86fa9d` | Engine hooks → `src/engine/hooks/` (the 12 hooks of the eslint `boundaries/engine-hooks` block) |
+| 3-M7 | `d1875de` | Dsearch application plane → `src/app/` (`dsearchProtocol`, `moderation`, `reports`, `affiliates`, `referrals` +tests, `engine/profile.ts`, app hooks → `src/app/hooks/`); `src/lib/engine/index.ts` barrel dropped (no consumers); `boundaries/*` globs updated to the new paths, app-plane bans extended to `src/app/**` with the single documented `useProviderSearch` → moderation exception |
+| 3-M9 | `c30c35c` | Retired proven-dead legacy search paths (zero live consumers, re-verified before deletion): `useWebSearch` + `lib/searxng`, `useDarkWebSearch` + `lib/ahmia` + `DarkWebResultCard`, `useNostrSearch` + `KindFilter`, `NostrResultCard`, `WebResultCard` |
 
 ## Staged physical moves (next phases)
 
@@ -29,18 +33,11 @@ commit, build + test after each.
 
 | # | Move | Importer rewrite |
 |---|---|---|
-| M2 | `src/lib/{searchIndex,communityIndex,keywordStakes,termSignals}.ts` (+tests) → `src/federation/` | `@/lib/<name>` → `@/federation/<name>` |
-| M3 | `src/lib/providers/` → `src/engine/providers/`; `src/lib/searxngInstances.ts` → `src/engine/providers/` | `@/lib/providers/...` → `@/engine/providers/...`; intra-dir `./x` imports untouched |
-| M4 | `src/lib/{queryParser,queryEngine,queryMatch,queryClassify,resultRank,calculator}.ts` (+tests) → `src/engine/query/`; `src/lib/votes.ts` → `src/engine/` | uniform prefix rewrites |
-| M5 | `src/lib/ai/` → `src/ai/`; `src/lib/aiConfig.ts` (+test) → `src/ai/`; `useAIAnswer`/`useEngineAIStatus` → `src/ai/hooks/` | prefix rewrites |
-| M6 | engine hooks (`useProviderSearch`, `useSearchIndexer`, `useInstantAnswer`, `useTrendingTerms`, `useRecentIndexedDocs`, `useRecentStakes`, `useMyNode`, `useNetworkStats`, `useVotes`, `useRelayDiscovery`, `useSearchRelayPool`, `useSearxngInstances`) → `src/engine/hooks/` | `@/hooks/<name>` → `@/engine/hooks/<name>` per moved hook |
-| M7 | app plane → `src/app/`: `dsearchProtocol.ts`, `moderation.ts`, `reports.ts`, `affiliates.ts`, `referrals.ts` (+tests), `src/lib/engine/profile.ts` (the `DSEARCH_PROFILE` instance), app hooks (`useModeration`, `useAdminAccess`, `useAffiliates`, `useReferrals`, `useCachedQueries`) | prefix rewrites; update `engine/index.ts` barrel or drop it |
 | M8 | split `appRelays.ts`: pool machinery → core; default relay lists + `dsearch:*` storage keys → app config | see §"Known debt" in PACKAGE_BOUNDARIES.md |
-| M9 | retire proven-dead legacy paths (zero consumers, verify again before deleting): `useWebSearch.ts` + `lib/searxng.ts`, `useDarkWebSearch.ts` + `lib/ahmia.ts` + `DarkWebResultCard.tsx`, `useNostrSearch.ts` + `KindFilter.tsx`, `NostrResultCard.tsx`, `WebResultCard.tsx` | deletion only |
 | M10 | decide `backend/`'s home (candidate: separate legacy repo) | none (disconnected) |
 
-After M2–M7: update the `boundaries/*` globs in `eslint.config.js` to the new
-paths, then consider npm workspaces (`packages/*`) **only when npm publishing
+The `boundaries/*` globs in `eslint.config.js` already track the post-M7
+paths. Consider npm workspaces (`packages/*`) **only when npm publishing
 is actually needed** — the single-build layout is intentional until then.
 
 ## Known cross-layer edge (accepted, documented)
