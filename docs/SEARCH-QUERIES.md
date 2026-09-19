@@ -69,6 +69,6 @@ nostr type:pdf after:2026-01-01
 - Malformed syntax (`nostr AND`, unclosed quotes, empty `site:`) never
   crashes anything — the engine recovers and searches on.
 
-Under the hood: `src/lib/queryParser.ts` (structured parse) +
-`src/lib/queryEngine.ts` (authoritative local evaluation). Both are
+Under the hood: `src/engine/query/queryParser.ts` (structured parse) +
+`src/engine/query/queryEngine.ts` (authoritative local evaluation). Both are
 internal to Dsearch — no protocol changes, nothing to federate.

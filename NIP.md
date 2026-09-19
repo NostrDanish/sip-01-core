@@ -69,7 +69,7 @@ All new indexing is SIP-01 document observations (kind 39697), signed by per-dev
 identities — no central key, no service, no trust list.
 
 Running a fork with your own auto-indexing signer? Add your pubkey to
-`INDEXER_PUBKEYS` in `src/lib/searchIndex.ts` and your searches feed the same index.
+`INDEXER_PUBKEYS` in `src/federation/searchIndex.ts` and your searches feed the same index.
 
 ---
 
@@ -287,7 +287,7 @@ search query exactly matches a staked keyword, the stake renders as the top
 Application-specific control data is **not** protocol data. SIP-01 observations and the
 shared `0xsearchstr` federation schemas (above) stay shared; everything that configures
 *this app* lives under canonical `dsearch:*` namespaces, rooted at the owner pubkey
-(`OWNER_PUBKEY` in `src/lib/dsearchProtocol.ts` — the single trust root; its nsec never
+(`OWNER_PUBKEY` in `src/app/dsearchProtocol.ts` — the single trust root; its nsec never
 touches this codebase).
 
 **Migration policy:** writes are canonical `dsearch:*` only. Legacy `presearchstr:*` role
@@ -306,7 +306,7 @@ only) until the owner re-publishes them canonically (Admin → Roles re-save = m
 Role-list resolution: only owner-signed events count; per list, the canonical d-tag
 supersedes the legacy one once it exists (removals stick after migration); latest event
 per d-tag wins. Permission matrix: owner > admin > moderator > user — see
-`PERMISSIONS` in `src/lib/dsearchProtocol.ts`.
+`PERMISSIONS` in `src/app/dsearchProtocol.ts`.
 
 ### Affiliate link rules (kind 30078, `dsearch:affiliate-rules`)
 
