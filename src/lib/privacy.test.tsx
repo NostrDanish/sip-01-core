@@ -12,7 +12,7 @@
  *    links; javascript:/data:/file:/blob:/chrome:/intent: never may.
  */
 import { describe, it, expect } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 
 import { classifyQuery, providerAllowlistFor } from '@/lib/queryClassify';
 import { sanitizeUrl, sanitizeResultUrl, sanitizePublicUrl } from '@/lib/sanitizeUrl';
@@ -122,35 +122,41 @@ describe('result card link safety (hostile result data)', () => {
     provider: 'community',
   };
 
-  it('does not render javascript: URLs as links', () => {
+  // NostrLoginProvider (inside TestApp) hydrates from storage in a microtask
+  // and renders null until then — wait for the card to appear before
+  // asserting on it.
+  it('does not render javascript: URLs as links', async () => {
     const { container } = render(
       <TestApp>
         <UnifiedResultCard result={{ ...base, url: 'javascript:alert(1)' }} />
       </TestApp>,
     );
+    // The card still renders, just without any anchor.
+    await waitFor(() => expect(container.textContent).toContain('Some result'));
     expect(container.querySelector('a[href^="javascript:"]')).toBeNull();
-    // No anchor at all for an unsafe external URL — the card still renders.
     expect(container.querySelector('a')).toBeNull();
-    expect(container.textContent).toContain('Some result');
   });
 
-  it('renders https URLs as links', () => {
+  it('renders https URLs as links', async () => {
     const { container } = render(
       <TestApp>
         <UnifiedResultCard result={base} />
       </TestApp>,
     );
-    const link = container.querySelector('a[href="https://example.com/"]');
-    expect(link).not.toBeNull();
+    await waitFor(() => {
+      expect(container.querySelector('a[href="https://example.com/"]')).not.toBeNull();
+    });
   });
 
-  it('renders magnet torrent links (NIP-35)', () => {
+  it('renders magnet torrent links (NIP-35)', async () => {
     const magnet = 'magnet:?xt=urn:btih:0123456789abcdef0123456789abcdef01234567&dn=test';
     const { container } = render(
       <TestApp>
         <UnifiedResultCard result={{ ...base, url: magnet, source: 'nostr' }} />
       </TestApp>,
     );
-    expect(container.querySelector(`a[href^="magnet:"]`)).not.toBeNull();
+    await waitFor(() => {
+      expect(container.querySelector(`a[href^="magnet:"]`)).not.toBeNull();
+    });
   });
 });
