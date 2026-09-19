@@ -1,6 +1,5 @@
 export {
   ENGINE_PROFILE,
-  DSEARCH_PROFILE,
   DSEARCH_SYSTEM_PROMPT,
   type EngineProfile,
   type EngineAiConfig,
