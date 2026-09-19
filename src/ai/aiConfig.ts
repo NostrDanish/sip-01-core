@@ -16,7 +16,7 @@
  *      or any API response. Available only when the operator deployed the
  *      worker AND configured it (status comes from GET /api/ai/status).
  *   3. COMMUNITY FALLBACK — the host engine's shared, rate-limited key with
- *      a locked model (injected via the engineConfig seam, e.g. Dsearch's
+ *      a locked model (injected via the engineConfig seam, e.g. the host's
  *      profile), so AI answers work out of the box on that engine's
  *      deployments (including static hosting with no worker). The key is
  *      public by design — it ships in the host's bundle and must stay
@@ -40,7 +40,7 @@ export type { EngineAIStatus } from '@/ai/engineProxy';
  * /api/* to the worker. Deployments on static hosts whose rewrites cannot
  * forward POST bodies can point the engine base at the worker directly via
  * the non-secret build var VITE_ENGINE_API_BASE
- * (e.g. https://dsearch.workers.dev/api/ai). The worker reflects an
+ * (e.g. https://ai.example.com/api/ai). The worker reflects an
  * allowlisted Origin, so cross-origin calls carry no cookies and expose
  * no keys. Forks that co-locate the worker simply leave the var unset and
  * keep the same-origin default.

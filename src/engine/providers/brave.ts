@@ -3,12 +3,12 @@
  *
  * Credential order (never both in one request):
  *   1. User BYOK key in localStorage — query goes to Brave via the CORS
- *      proxy (the proxy sees query + key). The original Dsearch path.
+ *      proxy (the proxy sees query + key).
  *   2. Engine-provided Brave — same-origin POST /api/search/brave. The
  *      worker injects BRAVE_API_KEY. No key in the browser.
  *   3. Neither → zero-cost no-op.
  *
- * The engine path is how Dsearch can offer Brave without exposing a
+ * The engine path is how a host can offer Brave without exposing a
  * shared key — the 0xSigner pattern: secrets live server-side, browsers
  * call the same-origin proxy.
  */

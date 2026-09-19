@@ -1,5 +1,5 @@
 /**
- * Network overview hooks — live status for the Dsearch / SIP-01 network page.
+ * Network overview hooks — live status for a SIP-01 network overview page.
  *
  * Three read paths, all client-side, all read-only:
  *   1. Relay NIP-11 documents (HTTP) — which index relays are alive and

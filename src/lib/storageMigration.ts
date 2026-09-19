@@ -4,12 +4,11 @@
  * When an app renames a storage key (rebrand, namespace cleanup), existing
  * users carry state under the old key. These helpers read through to a
  * legacy key (forward-migrating on first read) and write only the canonical
- * key. They know nothing about Nostr, Dsearch, or any specific key naming —
- * the caller supplies both keys.
+ * key. They know nothing about Nostr or any specific key naming — the
+ * caller supplies both keys.
  *
- * Extracted from dsearchProtocol.ts: a storage primitive must not live in
- * an application's trust-root module, or every consumer silently inherits
- * the app's control-plane namespace.
+ * A storage primitive must not live in an application's trust-root module,
+ * or every consumer silently inherits the app's control-plane namespace.
  */
 
 /**

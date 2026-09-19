@@ -6,7 +6,7 @@
  * default relay lists or localStorage key names. The host application
  * injects its relay identity ONCE at startup:
  *
- *   configureRelays(DSEARCH_RELAY_CONFIG); // see src/app/relayConfig.ts
+ *   configureRelays(MY_RELAY_CONFIG); // host-supplied pools + storage keys
  *
  * Core internals read the seam via getRelayConfig(). Until configured,
  * neutral brand-free defaults apply (empty pools, `sip01:*` storage keys) —

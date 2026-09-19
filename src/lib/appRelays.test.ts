@@ -3,8 +3,7 @@
  *
  * The machinery is host-agnostic: default relay lists and storage key names
  * arrive via the relayConfig seam. These tests exercise it against a TEST
- * config (not the Dsearch deployment's data — that is pinned separately in
- * src/app/relayConfig.test.ts).
+ * config (a host deployment pins its own data in its own tests).
  *
  * Pins: URL normalization, the effective-pool computation (defaults −
  * hidden + customs, deduped), the hide/restore round-trip, and legacy-key
