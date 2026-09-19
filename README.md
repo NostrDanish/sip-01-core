@@ -7,34 +7,123 @@
 **The reusable reference implementation of the SIP-01 Search Index Protocol —
 engine, contracts, providers, and AI layer that any search engine can build on.**
 
-> **Repository roles — read this first:**
->
-> | Repo | Role |
-> |---|---|
-> | [`NostrDanish/SIP-01`](https://github.com/NostrDanish/SIP-01) | **The protocol** — canonical specification, wire format, test vectors |
-> | **`NostrDanish/sip-01-core` (this repo)** | **The core software** — protocol reference implementation + reusable search-engine layer |
-> | `NostrDanish/Dsearch`, `Savedd`, … | **Applications** — products built on the core |
->
-> Architecture: [`ARCHITECTURE.md`](ARCHITECTURE.md) · Layer contracts:
-> [`PACKAGE_BOUNDARIES.md`](PACKAGE_BOUNDARIES.md) · Extraction status:
-> [`docs/EXTRACTION-MAP.md`](docs/EXTRACTION-MAP.md)
->
-> **Protocol version ≠ software version.** The SIP-01 wire format (`v: "1"`) is
-> frozen except through the spec; this core can improve independently.
->
-> **Licensing note:** per-layer license terms (and what they mean for
-> closed-source derivatives) are a pending project decision being settled
-> before ecosystem publication. Until a LICENSE file exists per layer, no
-> reuse rights are granted by default.
+## What SIP-01 is
 
-This repository currently also contains the **Dsearch application** — the
-flagship engine — as its in-tree reference app (being isolated into an
-application layer; see the extraction map). Everything below the next divider
-documents that application.
+[SIP-01](https://github.com/NostrDanish/SIP-01) (Search Index Protocol) is an
+open Nostr protocol for a decentralized web-document index: indexers publish
+observations about web pages as addressable Nostr events (kind 39697), and any
+search engine can read the shared index from public relays — no central
+crawler, no central server. The canonical specification (currently **v1.2**,
+wire schema `v: "1"`), its test vectors, and the wire format live in the
+[`NostrDanish/SIP-01`](https://github.com/NostrDanish/SIP-01) repo; a vendored
+copy is kept at [`docs/SIP-01.md`](docs/SIP-01.md) for convenience. When they
+disagree, the spec repo wins.
+
+## What sip-01-core is
+
+This repo is the protocol's **reference implementation plus a reusable
+search-engine core**: the byte-critical protocol code, the shared federation
+contracts, and a complete engine (providers, query/rank stack, relay
+machinery, optional AI answers) that any application can build on.
+
+```
+src/protocol/    SIP-01 reference implementation (byte-critical, spec-pinned)
+src/federation/  shared 0xsearchstr:* event contracts (frozen namespaces)
+src/lib/         core contracts + relay/proxy machinery (config seams)
+src/engine/      providers + query/rank stack + engine hooks
+src/ai/          AIProvider contract + OpenAI-compatible layer
+src/app/         the co-hosted application (today: Dsearch)
+```
+
+## What it is NOT
+
+- **Not the protocol specification.** The spec is the
+  [`NostrDanish/SIP-01`](https://github.com/NostrDanish/SIP-01) repo; this is
+  software that implements it.
+- **Not a published npm package.** `package.json` is `private: true`; nothing
+  here is published to any registry. Building on the core today means working
+  from this repository (see below).
+- **Not yet split from the application it hosts.** The Dsearch app still lives
+  in this repo (`src/app/`, `src/pages/`, most of `src/components/`). Moving
+  the application plane out into its own repo (the "apps split") is a future
+  phase — see [`docs/EXTRACTION-MAP.md`](docs/EXTRACTION-MAP.md).
+
+## Relationship to Dsearch
+
+[Dsearch](https://github.com/NostrDanish/Dsearch) is the flagship search
+engine built on this stack. Today the two are **co-hosted in this repo**:
+Dsearch is the in-tree reference application, isolated under `src/app/`
+(extraction phases M1–M9 complete). The Dsearch repo will migrate onto the
+core as a downstream consumer in the apps-split phase. The Dsearch product
+itself is documented below under
+[“Co-hosted application: Dsearch”](#co-hosted-application-dsearch).
+
+## Building your own engine on the core (today)
+
+**Fork the stack.** Clone this repo, then:
+
+1. **Replace the app profile** — `src/app/profile.ts` is the Dsearch instance
+   of `EngineProfile` (branding, tabs, provider selection, AI prompt,
+   community-AI config). Write yours in its place.
+2. **Configure the seams** — call `configureEngine()` (`src/lib/engineConfig.ts`)
+   and `configureRelays()` (`src/lib/relayConfig.ts`, your default relay pools
+   + storage-key names) once at bootstrap. Engine, AI, and relay internals
+   never import an application profile; they read these seams at call time.
+3. **Compose providers** — `createProviderRegistry([...])`
+   (`src/engine/providers/registry.ts`) builds a catalog from any mix of the
+   15 built-in providers and your own. Any source that implements
+   `SearchProvider` (`src/engine/providers/types.ts`) slots in — including
+   closed-source ones.
+4. **Slot in your AI** — implement `AIProvider` (`src/ai/types.ts`), or reuse
+   `createOpenAICompatibleProvider` for any OpenAI-compatible endpoint.
+5. **Replace ranking/UI freely** — `src/engine/query/resultRank.ts` is one
+   replaceable ranker behind the same contracts; `src/components/` is a
+   reusable UI kit you can keep or discard with the pages.
+
+**Public interfaces vs. implementation details:** the public, semver-cared-for
+surface is the protocol layer, the federation namespaces, the two config
+seams, `SearchProvider`/`createProviderRegistry`, the query/rank functions,
+and `AIProvider` — the per-layer contract with exact export lists is
+[`PACKAGE_BOUNDARIES.md`](PACKAGE_BOUNDARIES.md). Everything else (provider
+internals, hook composition, page structure) is experimental and may change
+between releases.
+
+**Staying SIP-01 compatible:** run the protocol tests
+(`npx vitest run src/protocol` — 45 tests pinning the spec §13 vectors
+byte-for-byte); never change `normalizeIndexUrl` / `documentId` /
+`contentHash` behavior, never rename the `0xsearchstr:*` federation
+namespaces, and never change the wire format (`v` stays `"1"`) except through
+a spec revision. Architecture deep-dive: [`ARCHITECTURE.md`](ARCHITECTURE.md).
+
+## Open contracts, closed components
+
+The protocol layer, federation contracts, config seams, and the provider/AI
+interfaces are designed as **open contracts** — stable touchpoints you build
+against. Providers, ranking, AI backends, crawlers, datasets, and UI are
+designed as **replaceable components**: you can keep the built-ins, swap
+individual ones, or keep your own versions proprietary behind the same
+interfaces.
+
+**Licensing boundary:** this repository currently has **no LICENSE file**.
+Without one, no reuse or distribution rights are granted by default. A
+licensing decision is required before third-party reuse or distribution of
+any layer; until then, treat the code as all-rights-reserved and do not
+assume terms for any derivative, open or closed.
+
+## Versioning — three separate axes
+
+| Axis | Current | Changes when |
+|---|---|---|
+| **SIP-01 document revision** | v1.2 | the spec repo publishes a revision |
+| **Wire schema version** (`v` tag) | `"1"` | only with a spec revision that changes the wire format |
+| **sip-01-core software version** | 0.1.0 (semver, this repo) | any software release — internal improvements must not change wire behavior |
+
+Protocol compatibility always takes priority over software architecture: the
+core can ship fixes and features while the wire format stays frozen.
 
 ---
 
-# Dsearch (the reference application)
+# Co-hosted application: Dsearch
 
 **The community-driven search engine. Powered by Nostr, owned by no one.**
 
@@ -212,7 +301,7 @@ The `0xsearchstr:*` namespaces are the **federation contract** shared with 0xSea
 compatible fork — they are intentionally kept, not legacy accidents.
 
 Application control-plane data (role lists, moderation labels, abuse inboxes, affiliate rules,
-invite-friends config) lives in the **`dsearch:*` control plane** (`src/lib/dsearchProtocol.ts`),
+invite-friends config) lives in the **`dsearch:*` control plane** (`src/app/dsearchProtocol.ts`),
 rooted at the owner key — never in the shared federation namespaces. Legacy `presearchstr:*` /
 `0xsearchstr.*` control data stays readable (owner-signed) until migrated. Partner referrals use
 pseudonymous per-device keys (kinds 34967 / 6079, `t: dsearch-referral`).
@@ -274,7 +363,10 @@ optional Cloudflare worker (engine AI proxy only)
 
 ## License
 
-MIT
+No LICENSE file exists in this repository yet — see the
+[licensing boundary](#open-contracts-closed-components) above. Until a
+licensing decision lands, no reuse or distribution rights are granted by
+default.
 
 ---
 
