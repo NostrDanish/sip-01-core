@@ -23,22 +23,42 @@ come before physical moves, and every phase must leave the test gate green
 | 3-M5 | `bae8b82` | Physical home for the AI layer: `src/lib/ai/` → `src/ai/`, `src/lib/aiConfig.ts` (+test) → `src/ai/`, `useAIAnswer`/`useEngineAIStatus` → `src/ai/hooks/` |
 | 3-M6 | `d86fa9d` | Engine hooks → `src/engine/hooks/` (the 12 hooks of the eslint `boundaries/engine-hooks` block) |
 | 3-M7 | `d1875de` | Dsearch application plane → `src/app/` (`dsearchProtocol`, `moderation`, `reports`, `affiliates`, `referrals` +tests, `engine/profile.ts`, app hooks → `src/app/hooks/`); `src/lib/engine/index.ts` barrel dropped (no consumers); `boundaries/*` globs updated to the new paths, app-plane bans extended to `src/app/**` with the single documented `useProviderSearch` → moderation exception |
+| 3-M8 | `d9c93f6`, `da712f4` | `appRelays.ts` split: generic pool machinery stays core (`src/lib/appRelays.ts`); default relay lists + `dsearch:*` pool storage keys moved to the app plane (`src/app/relayConfig.ts`, `DSEARCH_RELAY_CONFIG`) behind the new `configureRelays`/`getRelayConfig` seam (`src/lib/relayConfig.ts`). Neutral brand-free defaults (`sip01:*` keys, empty pools) until configured |
 | 3-M9 | `c30c35c` | Retired proven-dead legacy search paths (zero live consumers, re-verified before deletion): `useWebSearch` + `lib/searxng`, `useDarkWebSearch` + `lib/ahmia` + `DarkWebResultCard`, `useNostrSearch` + `KindFilter`, `NostrResultCard`, `WebResultCard` |
 
 ## Staged physical moves (next phases)
 
-Pure path relocations (`git mv` + uniform import-specifier rewrites). Execute
-with the full test suite runnable (`npm run test`) — do them one group per
-commit, build + test after each.
-
 | # | Move | Importer rewrite |
 |---|---|---|
-| M8 | split `appRelays.ts`: pool machinery → core; default relay lists + `dsearch:*` storage keys → app config | see §"Known debt" in PACKAGE_BOUNDARIES.md |
 | M10 | decide `backend/`'s home (candidate: separate legacy repo) | none (disconnected) |
 
-The `boundaries/*` globs in `eslint.config.js` already track the post-M7
+The `boundaries/*` globs in `eslint.config.js` already track the post-M8
 paths. Consider npm workspaces (`packages/*`) **only when npm publishing
 is actually needed** — the single-build layout is intentional until then.
+
+## Remaining debt
+
+Debt that survives the completed moves, recorded so it is not rediscovered
+the hard way:
+
+- **4 per-feature `dsearch:*` localStorage keys inside the engine/AI layers**
+  (they should read host key names from a seam like `relayConfig` does):
+  `src/engine/votes.ts` (`dsearch:votes`),
+  `src/engine/providers/braveKey.ts` (`dsearch:brave-api-key`),
+  `src/engine/providers/parallel.ts` (`dsearch:parallel-api-key`),
+  `src/ai/aiConfig.ts` (`dsearch:ai-config`).
+- **Dsearch-branded `alt` strings on shared federation events** (cosmetic,
+  but the strings ride the shared `0xsearchstr:*` contract):
+  `src/engine/votes.ts` (vote events),
+  `src/federation/communityIndex.ts` (submission events).
+- **M10: `backend/` decision** — the legacy 0xSearchstr-era self-hosted
+  stack (Meilisearch + crawlers + NIP-50 relay proxy) is disconnected from
+  the app build; keep, extract to its own repo, or drop. Staged above.
+- **No LICENSE file** — without one, no reuse rights are granted by
+  default; a licensing decision is required before third-party
+  reuse/distribution. See the README licensing note.
+- **Package identity** — `package.json` is still `dsearch`, private,
+  `0.0.0`; the repo is not published to npm.
 
 ## Known cross-layer edge (accepted, documented)
 
