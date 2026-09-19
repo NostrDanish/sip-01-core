@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { LoginArea } from '@/components/auth/LoginArea';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useNostrPublish } from '@/hooks/useNostrPublish';
-import { buildReportEvent, REPORT_TYPES } from '@/lib/reports';
+import { buildReportEvent, REPORT_TYPES } from '@/app/reports';
 import { useState } from 'react';
 
 export default function Policy() {

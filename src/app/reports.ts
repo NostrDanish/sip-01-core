@@ -10,7 +10,7 @@
  */
 import { nip19 } from 'nostr-tools';
 
-import { REPORT_KIND, REPORT_NS } from '@/lib/moderation';
+import { REPORT_KIND, REPORT_NS } from '@/app/moderation';
 
 /** NIP-56 report types. */
 export const REPORT_TYPES = [

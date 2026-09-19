@@ -18,9 +18,9 @@ import { classifyQuery, providerAllowlistFor } from '@/engine/query/queryClassif
 import { parseQuery } from '@/engine/query/queryParser';
 import { applyHardConstraints } from '@/engine/query/queryEngine';
 import { sortByQueryRelevance } from '@/engine/query/resultRank';
-import { isHiddenResult } from '@/lib/moderation';
+import { isHiddenResult } from '@/app/moderation';
 import { useSearchIndexer } from '@/engine/hooks/useSearchIndexer';
-import { useModerationSet } from '@/hooks/useModeration';
+import { useModerationSet } from '@/app/hooks/useModeration';
 import { useAppContext } from '@/hooks/useAppContext';
 
 export type ProviderStatus = 'idle' | 'searching' | 'done' | 'error';

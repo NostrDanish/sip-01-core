@@ -16,7 +16,7 @@ import { LoginArea } from '@/components/auth/LoginArea';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useNostrPublish } from '@/hooks/useNostrPublish';
 import { useToast } from '@/hooks/useToast';
-import { buildReportEvent, REPORT_TYPES } from '@/lib/reports';
+import { buildReportEvent, REPORT_TYPES } from '@/app/reports';
 
 interface ReportDialogProps {
   open: boolean;

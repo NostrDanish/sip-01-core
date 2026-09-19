@@ -22,9 +22,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
-import { useMyReferralStats, useReferralConfig } from '@/hooks/useReferrals';
+import { useMyReferralStats, useReferralConfig } from '@/app/hooks/useReferrals';
 import { useToast } from '@/hooks/useToast';
-import { ENGINE_PROFILE } from '@/lib/engine/profile';
+import { ENGINE_PROFILE } from '@/app/profile';
 
 function timeAgo(ts: number): string {
   const diff = Math.floor(Date.now() / 1000) - ts;

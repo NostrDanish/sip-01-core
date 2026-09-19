@@ -12,9 +12,9 @@ import { Sparkles, ExternalLink, AlertTriangle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { AIEvidenceItem, AIAnswer } from '@/ai/types';
 import { sanitizeUrl } from '@/lib/sanitizeUrl';
-import { applyAffiliateRules, type AffiliateRule } from '@/lib/affiliates';
-import { useAffiliateRules } from '@/hooks/useAffiliates';
-import { trackAffiliateClick } from '@/hooks/useReferrals';
+import { applyAffiliateRules, type AffiliateRule } from '@/app/affiliates';
+import { useAffiliateRules } from '@/app/hooks/useAffiliates';
+import { trackAffiliateClick } from '@/app/hooks/useReferrals';
 import { cn } from '@/lib/utils';
 
 interface AIAnswerCardProps {

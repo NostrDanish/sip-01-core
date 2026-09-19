@@ -11,7 +11,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx';
 import { Skeleton } from '@/components/ui/skeleton.tsx';
 import { useLoggedInAccounts, type Account } from '@/hooks/useLoggedInAccounts';
-import { useAdminAccess } from '@/hooks/useAdminAccess';
+import { useAdminAccess } from '@/app/hooks/useAdminAccess';
 
 interface AccountSwitcherProps {
   onAddAccountClick: () => void;

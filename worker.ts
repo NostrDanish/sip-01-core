@@ -43,7 +43,7 @@ import {
   buildBraveSearchUrl,
   type BraveProxyEnv,
 } from './src/engine/providers/braveProxy';
-import { ENGINE_PROFILE } from './src/lib/engine/profile';
+import { ENGINE_PROFILE } from './src/app/profile';
 
 /**
  * The deployment's engine AI defaults (endpoint / model / provider label /

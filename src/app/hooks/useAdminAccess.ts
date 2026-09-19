@@ -15,7 +15,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { queryRelayPool } from '@/lib/searchRelays';
-import { getModerationRelayUrls } from '@/lib/moderation';
+import { getModerationRelayUrls } from '@/app/moderation';
 import {
   OWNER_PUBKEY,
   ROLES_KIND,
@@ -23,7 +23,7 @@ import {
   PERMISSIONS,
   resolveRoleEvents,
   type AppRole,
-} from '@/lib/dsearchProtocol';
+} from '@/app/dsearchProtocol';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 /** Fetch the owner-signed role lists (canonical + legacy). Cached — they

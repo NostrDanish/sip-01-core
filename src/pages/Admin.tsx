@@ -49,7 +49,7 @@ import { useAuthor } from '@/hooks/useAuthor';
 import { useEngineAIStatus } from '@/ai/hooks/useEngineAIStatus';
 import { sendEngineAIAction, testEngineAI } from '@/ai/engineAdmin';
 import { AI_PROVIDERS, getAIProvider } from '@/ai/registry';
-import { useCachedQueries } from '@/hooks/useCachedQueries';
+import { useCachedQueries } from '@/app/hooks/useCachedQueries';
 import { useRecentIndexedDocs } from '@/engine/hooks/useRecentIndexedDocs';
 import { useRecentStakes } from '@/engine/hooks/useRecentStakes';
 import {
@@ -59,15 +59,15 @@ import {
   useModerationSet,
   useRoleActions,
   type AbuseReport,
-} from '@/hooks/useModeration';
-import { useAdminAccess } from '@/hooks/useAdminAccess';
-import { useAffiliateRules, useAffiliateActions } from '@/hooks/useAffiliates';
-import { useReferralConfig, useReferralConfigActions } from '@/hooks/useReferrals';
+} from '@/app/hooks/useModeration';
+import { useAdminAccess } from '@/app/hooks/useAdminAccess';
+import { useAffiliateRules, useAffiliateActions } from '@/app/hooks/useAffiliates';
+import { useReferralConfig, useReferralConfigActions } from '@/app/hooks/useReferrals';
 import {
   applyAffiliateRules, isValidAffiliateRule, normalizeHostInput, paramsFromUrl,
   type AffiliateRule,
-} from '@/lib/affiliates';
-import { DEFAULT_REFERRAL_CONFIG, type ReferralConfig } from '@/lib/referrals';
+} from '@/app/affiliates';
+import { DEFAULT_REFERRAL_CONFIG, type ReferralConfig } from '@/app/referrals';
 import {
   OWNER_PUBKEY,
   ADMIN_ROLES_D_TAG,
@@ -75,7 +75,7 @@ import {
   isHiddenResult,
   type AppRole,
   type HiddenTarget,
-} from '@/lib/moderation';
+} from '@/app/moderation';
 import { normalizeIndexUrl } from '@/protocol/webIndex';
 import { getIndexRelayUrls, getSearchRelayUrls } from '@/lib/appRelays';
 

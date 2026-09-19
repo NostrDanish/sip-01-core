@@ -24,7 +24,7 @@ import { useProviderSearch } from '@/engine/hooks/useProviderSearch';
 import { useInstantAnswer } from '@/engine/hooks/useInstantAnswer';
 import { useAIAnswer } from '@/ai/hooks/useAIAnswer';
 import { useSearchHotkeys } from '@/hooks/useSearchHotkeys';
-import { ENGINE_PROFILE } from '@/lib/engine/profile';
+import { ENGINE_PROFILE } from '@/app/profile';
 import { useAppContext } from '@/hooks/useAppContext';
 import { ALL_SOURCE_TABS } from '@/components/sourceTabsMeta';
 import type { SearchSource } from '@/engine/providers/types';

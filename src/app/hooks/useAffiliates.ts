@@ -23,16 +23,16 @@ import {
   parseAffiliateRules,
   buildAffiliateRulesEvent,
   type AffiliateRule,
-} from '@/lib/affiliates';
+} from '@/app/affiliates';
 import {
   OWNER_PUBKEY,
   ROLES_KIND,
   ROLE_LIST_D_TAGS,
   PERMISSIONS,
   resolveRoleEvents,
-} from '@/lib/dsearchProtocol';
-import { getModerationRelayUrls } from '@/lib/moderation';
-import { useAdminAccess } from '@/hooks/useAdminAccess';
+} from '@/app/dsearchProtocol';
+import { getModerationRelayUrls } from '@/app/moderation';
+import { useAdminAccess } from '@/app/hooks/useAdminAccess';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 export function useAffiliateRules(): { rules: AffiliateRule[]; isLoading: boolean } {

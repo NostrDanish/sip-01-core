@@ -37,7 +37,7 @@ import {
   DSEARCH_PROTOCOL,
   LEGACY_PROTOCOL,
   isModerationNs,
-} from '@/lib/dsearchProtocol';
+} from '@/app/dsearchProtocol';
 
 export { OWNER_PUBKEY };
 
@@ -92,7 +92,7 @@ export const LEGACY_ADMIN_ROLES_D_TAG = LEGACY_PROTOCOL.adminRoles;
 export const LEGACY_MOD_ROLES_D_TAG = LEGACY_PROTOCOL.moderatorRoles;
 export const ROLES_T_TAG = DSEARCH_PROTOCOL.rolesTag;
 
-export type { AppRole } from '@/lib/dsearchProtocol';
+export type { AppRole } from '@/app/dsearchProtocol';
 
 /** Build a role list event (owner publishes). */
 export function buildRoleListEvent(dTag: string, pubkeys: string[]): {

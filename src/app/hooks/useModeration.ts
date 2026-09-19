@@ -32,9 +32,9 @@ import {
   getModerationRelayUrls,
   type HiddenTarget,
   type ModerationSet,
-} from '@/lib/moderation';
-import { isAbuseNs } from '@/lib/dsearchProtocol';
-import { useTrustedModerators, useAdminAccess } from '@/hooks/useAdminAccess';
+} from '@/app/moderation';
+import { isAbuseNs } from '@/app/dsearchProtocol';
+import { useTrustedModerators, useAdminAccess } from '@/app/hooks/useAdminAccess';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 /* ------------------------------------------------------------------ */

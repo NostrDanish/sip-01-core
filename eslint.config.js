@@ -103,12 +103,12 @@ export default defineConfig(
         {
           paths: [
             {
-              name: "@/lib/engine/profile",
+              name: "@/app/profile",
               message:
                 "Engine/AI code must not import the app profile. Read host config via getEngineConfig() (src/lib/engineConfig.ts).",
             },
             {
-              name: "@/lib/dsearchProtocol",
+              name: "@/app/dsearchProtocol",
               message:
                 "Engine/AI code must not import an application's control plane (trust root, roles, namespaces).",
             },
@@ -126,6 +126,11 @@ export default defineConfig(
               group: ["@/hooks/**"],
               message: "The engine/AI library layer must not import React hooks (hooks consume this layer, not vice versa).",
             },
+            {
+              group: ["@/app/**"],
+              message:
+                "The engine/AI library layer must not import the application plane (src/app/**). Host identity arrives via the engineConfig seam.",
+            },
           ],
         },
       ],
@@ -138,12 +143,12 @@ export default defineConfig(
     // profile, no app control plane — host identity arrives via the
     // engineConfig seam. `@/hooks/**` is NOT banned here: hooks legitimately
     // compose other hooks (useAppContext & co.).
-    // useProviderSearch additionally imports the app moderation set — the
-    // documented cross-layer edge (docs/EXTRACTION-MAP.md, "Known
-    // cross-layer edge"); it stays covered here for profile/control-plane
-    // bans while the moderation seam is deferred to the apps/dsearch split.
+    // useProviderSearch additionally imports the app moderation set
+    // (@/app/moderation + @/app/hooks/useModeration) — the documented
+    // cross-layer edge (docs/EXTRACTION-MAP.md, "Known cross-layer edge");
+    // it is covered by the dedicated block below while the moderation seam
+    // is deferred to the apps/dsearch split.
     files: [
-      "src/engine/hooks/useProviderSearch.ts",
       "src/engine/hooks/useSearchIndexer.ts",
       "src/engine/hooks/useInstantAnswer.ts",
       "src/engine/hooks/useTrendingTerms.ts",
@@ -162,12 +167,12 @@ export default defineConfig(
         {
           paths: [
             {
-              name: "@/lib/engine/profile",
+              name: "@/app/profile",
               message:
                 "Engine hooks must not import the app profile. Read host config via getEngineConfig() (src/lib/engineConfig.ts).",
             },
             {
-              name: "@/lib/dsearchProtocol",
+              name: "@/app/dsearchProtocol",
               message:
                 "Engine hooks must not import an application's control plane (trust root, roles, namespaces).",
             },
@@ -180,6 +185,65 @@ export default defineConfig(
             {
               group: ["@/pages/**"],
               message: "Engine hooks must not import pages.",
+            },
+            {
+              group: ["@/app/**"],
+              message:
+                "Engine hooks must not import the application plane (src/app/**). Host identity arrives via the engineConfig seam.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    name: "boundaries/engine-hooks-provider-search-exception",
+    // The single documented cross-layer edge (docs/EXTRACTION-MAP.md,
+    // "Known cross-layer edge"): useProviderSearch (engine orchestrator)
+    // reads the owner-signed moderation set via @/app/moderation and
+    // @/app/hooks/useModeration. Resolving it cleanly requires a
+    // moderation-provider injection point in the engineConfig seam, deferred
+    // to the apps/dsearch split. Until then this block keeps every other
+    // engine-hook constraint in force for this file (later flat-config
+    // blocks override earlier ones, so the bans are restated here).
+    files: ["src/engine/hooks/useProviderSearch.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "@/app/profile",
+              message:
+                "Engine hooks must not import the app profile. Read host config via getEngineConfig() (src/lib/engineConfig.ts).",
+            },
+            {
+              name: "@/app/dsearchProtocol",
+              message:
+                "Engine hooks must not import an application's control plane (trust root, roles, namespaces).",
+            },
+          ],
+          patterns: [
+            {
+              group: ["@/components/**"],
+              message: "Engine hooks must not import UI components.",
+            },
+            {
+              group: ["@/pages/**"],
+              message: "Engine hooks must not import pages.",
+            },
+            {
+              group: [
+                "@/app/reports",
+                "@/app/affiliates",
+                "@/app/referrals",
+                "@/app/hooks/useAdminAccess",
+                "@/app/hooks/useAffiliates",
+                "@/app/hooks/useReferrals",
+                "@/app/hooks/useCachedQueries",
+              ],
+              message:
+                "useProviderSearch may read the app moderation set only (documented cross-layer edge); all other application-plane imports are banned.",
             },
           ],
         },
@@ -206,12 +270,12 @@ export default defineConfig(
         {
           paths: [
             {
-              name: "@/lib/engine/profile",
+              name: "@/app/profile",
               message:
                 "Core contracts must not import the app profile. Host defaults arrive via the engineConfig seam or explicit parameters.",
             },
             {
-              name: "@/lib/dsearchProtocol",
+              name: "@/app/dsearchProtocol",
               message:
                 "Core contracts must not import an application's control plane (trust root, roles, namespaces).",
             },
@@ -228,6 +292,11 @@ export default defineConfig(
             {
               group: ["@/hooks/**"],
               message: "Core contracts must not import React hooks (hooks consume this layer, not vice versa).",
+            },
+            {
+              group: ["@/app/**"],
+              message:
+                "Core contracts must not import the application plane (src/app/**). Host defaults arrive via the engineConfig seam or explicit parameters.",
             },
           ],
         },

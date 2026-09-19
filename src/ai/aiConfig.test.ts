@@ -18,7 +18,7 @@ import {
   type EngineAIStatus,
 } from './aiConfig';
 import { configureEngine, resetEngineConfig } from '@/lib/engineConfig';
-import { ENGINE_PROFILE } from '@/lib/engine/profile';
+import { ENGINE_PROFILE } from '@/app/profile';
 
 /** The Dsearch profile carries the community free tier (its public key). */
 const COMMUNITY = ENGINE_PROFILE.ai.community!;

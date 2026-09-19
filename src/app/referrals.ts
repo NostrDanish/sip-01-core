@@ -35,7 +35,7 @@ export const REFERRAL_T_TAG = 'dsearch-referral';
 
 /** Invite Friends config (kind 30078, d-tag) — Dsearch control-plane data,
  *  defined in src/lib/dsearchProtocol.ts. Owner/admin-signed. */
-export { DSEARCH_PROTOCOL } from '@/lib/dsearchProtocol';
+export { DSEARCH_PROTOCOL } from '@/app/dsearchProtocol';
 
 const LS_REFERRER = 'dsearch:referrer';
 const LS_REF_DEVICE_KEY = 'dsearch:ref-device-key';

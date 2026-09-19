@@ -16,10 +16,10 @@
 import { useEffect } from 'react';
 
 import { useCurrentUser } from '@/hooks/useCurrentUser';
-import { useReferralConfig } from '@/hooks/useReferrals';
+import { useReferralConfig } from '@/app/hooks/useReferrals';
 import { publishToRelayPool } from '@/lib/searchRelays';
-import { getModerationRelayUrls } from '@/lib/moderation';
-import { parseRefParam, storeReferrer, buildReferralPing } from '@/lib/referrals';
+import { getModerationRelayUrls } from '@/app/moderation';
+import { parseRefParam, storeReferrer, buildReferralPing } from '@/app/referrals';
 
 export function ReferralCapture() {
   const { user } = useCurrentUser();

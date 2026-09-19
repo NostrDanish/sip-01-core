@@ -19,8 +19,8 @@ import { nip19 } from 'nostr-tools';
 import type { NostrEvent } from '@nostrify/nostrify';
 
 import { publishToRelayPool, queryRelayPool } from '@/lib/searchRelays';
-import { getModerationRelayUrls } from '@/lib/moderation';
-import { ENGINE_PROFILE } from '@/lib/engine/profile';
+import { getModerationRelayUrls } from '@/app/moderation';
+import { ENGINE_PROFILE } from '@/app/profile';
 import {
   REFERRAL_PING_KIND,
   AFFILIATE_CLICK_KIND,
@@ -31,15 +31,15 @@ import {
   buildReferralConfigEvent,
   DEFAULT_REFERRAL_CONFIG,
   type ReferralConfig,
-} from '@/lib/referrals';
+} from '@/app/referrals';
 import {
   OWNER_PUBKEY,
   ROLES_KIND,
   ROLE_LIST_D_TAGS,
   PERMISSIONS,
   resolveRoleEvents,
-} from '@/lib/dsearchProtocol';
-import { useAdminAccess } from '@/hooks/useAdminAccess';
+} from '@/app/dsearchProtocol';
+import { useAdminAccess } from '@/app/hooks/useAdminAccess';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 /* ------------------------------------------------------------------ */

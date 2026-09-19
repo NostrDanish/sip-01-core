@@ -15,7 +15,7 @@ import { AppProvider } from '@/components/AppProvider';
 import { AppConfig } from '@/contexts/AppContext';
 import { APP_RELAYS } from '@/lib/appRelays';
 import { getBrowserLanguage } from '@/lib/languageFilter';
-import { ENGINE_PROFILE } from '@/lib/engine/profile';
+import { ENGINE_PROFILE } from '@/app/profile';
 import { configureEngine } from '@/lib/engineConfig';
 import { readStoredWithLegacy } from '@/lib/storageMigration';
 import AppRouter from './AppRouter';

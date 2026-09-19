@@ -21,9 +21,9 @@ import { OnionWarningDialog } from '@/components/OnionWarningDialog';
 import { ReportDialog } from '@/components/ReportDialog';
 import { VoteButtons } from '@/components/VoteButtons';
 import { sanitizeUrl, sanitizeResultUrl } from '@/lib/sanitizeUrl';
-import { useAffiliateRules } from '@/hooks/useAffiliates';
-import { applyAffiliateRules } from '@/lib/affiliates';
-import { trackAffiliateClick } from '@/hooks/useReferrals';
+import { useAffiliateRules } from '@/app/hooks/useAffiliates';
+import { applyAffiliateRules } from '@/app/affiliates';
+import { trackAffiliateClick } from '@/app/hooks/useReferrals';
 import type { SearchResult } from '@/engine/providers/types';
 import { cn } from '@/lib/utils';
 
