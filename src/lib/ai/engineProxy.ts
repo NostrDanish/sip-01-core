@@ -20,7 +20,18 @@
  */
 import { verifyEvent, type Event as NostrEvent } from 'nostr-tools/pure';
 
-import { ENGINE_PROFILE } from '../engine/profile';
+/**
+ * Host-supplied engine AI defaults (the deployment's profile: endpoint,
+ * model, provider label, system prompt). Injected by the caller — this
+ * module is shared between the browser and the worker and must not import
+ * any application profile. The worker passes its deployment's profile.
+ */
+export interface EngineAIDefaults {
+  endpoint: string;
+  model: string;
+  providerName: string;
+  systemPrompt: string;
+}
 
 /** Engine AI configuration as stored (KV) or provided via env vars. */
 export interface EngineAIConfig {
@@ -65,27 +76,20 @@ export interface EngineAIEnv {
 
 const KV_CONFIG_KEY = 'engine-ai-config';
 
-/** Default model when the operator hasn't picked one (not a secret). */
-export const DEFAULT_ENGINE_MODEL = ENGINE_PROFILE.ai.model;
-/** Default endpoint when unset (OpenAI-compatible; operator overrides via env). */
-export const DEFAULT_ENGINE_ENDPOINT = ENGINE_PROFILE.ai.endpoint;
-/** Production system prompt — injected server-side so clients cannot override it. */
-export const ENGINE_SYSTEM_PROMPT = ENGINE_PROFILE.ai.systemPrompt;
-
 /* ------------------------------------------------------------------ */
 /* Config read / write                                                */
 /* ------------------------------------------------------------------ */
 
-function configFromEnv(env: EngineAIEnv): EngineAIConfig | null {
+function configFromEnv(env: EngineAIEnv, defaults: EngineAIDefaults): EngineAIConfig | null {
   // Canonical secret name is OPENAI_API_KEY; AI_API_KEY is the legacy alias.
   const apiKey = env.OPENAI_API_KEY?.trim() || env.AI_API_KEY?.trim();
   if (!apiKey) return null;
   return {
     enabled: env.AI_ENGINE_ENABLED !== 'false',
-    endpoint: env.AI_PROVIDER_ENDPOINT?.trim() || DEFAULT_ENGINE_ENDPOINT,
-    model: env.AI_MODEL?.trim() || DEFAULT_ENGINE_MODEL,
+    endpoint: env.AI_PROVIDER_ENDPOINT?.trim() || defaults.endpoint,
+    model: env.AI_MODEL?.trim() || defaults.model,
     apiKey,
-    providerName: env.AI_PROVIDER_NAME?.trim() || ENGINE_PROFILE.ai.providerName,
+    providerName: env.AI_PROVIDER_NAME?.trim() || defaults.providerName,
   };
 }
 
@@ -107,7 +111,10 @@ function isValidStoredConfig(value: unknown): value is EngineAIConfig {
  * env-var fallback. Returns null when the operator configured nothing —
  * a fresh clone takes this path and engine AI simply reports unavailable.
  */
-export async function readEngineConfig(env: EngineAIEnv): Promise<EngineAIConfig | null> {
+export async function readEngineConfig(
+  env: EngineAIEnv,
+  defaults: EngineAIDefaults,
+): Promise<EngineAIConfig | null> {
   if (env.AI_CONFIG_KV) {
     try {
       const raw = await env.AI_CONFIG_KV.get(KV_CONFIG_KEY);
@@ -119,7 +126,7 @@ export async function readEngineConfig(env: EngineAIEnv): Promise<EngineAIConfig
       // Corrupt/unreadable KV config — fall through to env.
     }
   }
-  return configFromEnv(env);
+  return configFromEnv(env, defaults);
 }
 
 /* ------------------------------------------------------------------ */
@@ -214,14 +221,16 @@ export function applyEngineSystemPrompt(messages: ChatMessage[], prompt: string)
 
 /** Build the upstream provider request. The operator's model is forced —
  *  clients never choose the engine-tier model or see the key. The engine
- *  system prompt is injected here so a client cannot override it. */
+ *  system prompt is injected here (host-supplied) so a client cannot
+ *  override it. */
 export function buildUpstreamBody(
   payload: ValidatedChat,
   config: EngineAIConfig,
+  systemPrompt: string,
 ): Record<string, unknown> {
   return {
-    model: config.model || DEFAULT_ENGINE_MODEL,
-    messages: applyEngineSystemPrompt(payload.messages, ENGINE_SYSTEM_PROMPT),
+    model: config.model,
+    messages: applyEngineSystemPrompt(payload.messages, systemPrompt),
     max_completion_tokens: payload.maxTokens,
   };
 }
@@ -352,7 +361,11 @@ export function parseAdminAction(content: string): AdminAction | string {
 
 /** Apply a validated action to the current config. Returns the new config
  *  to store, or null when the config should be deleted (clear). */
-export function applyAdminAction(current: EngineAIConfig | null, action: AdminAction): EngineAIConfig | null | string {
+export function applyAdminAction(
+  current: EngineAIConfig | null,
+  action: AdminAction,
+  defaults: EngineAIDefaults,
+): EngineAIConfig | null | string {
   switch (action.action) {
     case 'clear':
       return null;
@@ -363,8 +376,8 @@ export function applyAdminAction(current: EngineAIConfig | null, action: AdminAc
     case 'set': {
       return {
         enabled: current?.enabled ?? true,
-        endpoint: action.endpoint?.trim() || current?.endpoint || DEFAULT_ENGINE_ENDPOINT,
-        model: action.model?.trim() || current?.model || DEFAULT_ENGINE_MODEL,
+        endpoint: action.endpoint?.trim() || current?.endpoint || defaults.endpoint,
+        model: action.model?.trim() || current?.model || defaults.model,
         apiKey: action.apiKey!.trim(),
         providerName: action.providerName?.trim() || current?.providerName || 'Engine AI',
       };

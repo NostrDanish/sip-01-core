@@ -13,7 +13,7 @@ import {
   resolveAIConfig,
   engineAIAvailable,
   hasOwnAIKey,
-  DEFAULT_AI_CONFIG,
+  getDefaultAIConfig,
   ENGINE_AI_BASE,
   COMMUNITY_AI_KEY,
   COMMUNITY_AI_ENDPOINT,
@@ -34,7 +34,7 @@ const ENGINE_OFF: EngineAIStatus = { configured: false, enabled: false };
 
 describe('resolveAIConfig precedence', () => {
   it('1. no engine + no user key → built-in free tier (locked provider+model)', () => {
-    const r = resolveAIConfig({ ...DEFAULT_AI_CONFIG, apiKey: '' }, ENGINE_OFF);
+    const r = resolveAIConfig({ ...getDefaultAIConfig(), apiKey: '' }, ENGINE_OFF);
     expect(r.tier).toBe('community');
     expect(r.apiKey).toBe(COMMUNITY_AI_KEY); // public by design (rate-limited)
     expect(r.model).toBe(COMMUNITY_AI_MODEL); // locked — user's 'auto' ignored
@@ -42,12 +42,12 @@ describe('resolveAIConfig precedence', () => {
   });
 
   it('1b. static deploy (no status endpoint) still gets the built-in tier', () => {
-    const r = resolveAIConfig({ ...DEFAULT_AI_CONFIG, apiKey: '' }, null);
+    const r = resolveAIConfig({ ...getDefaultAIConfig(), apiKey: '' }, null);
     expect(r.tier).toBe('community');
   });
 
   it('2. engine configured only → engine tier beats the built-in tier', () => {
-    const r = resolveAIConfig({ ...DEFAULT_AI_CONFIG, apiKey: '' }, ENGINE_ON);
+    const r = resolveAIConfig({ ...getDefaultAIConfig(), apiKey: '' }, ENGINE_ON);
     expect(r.tier).toBe('engine');
     expect(r.endpoint).toBe(ENGINE_AI_BASE); // same-origin /api/ai
     expect(r.model).toBe('qwen/qwen-2.5-7b-instruct');
@@ -56,7 +56,7 @@ describe('resolveAIConfig precedence', () => {
 
   it('3. user key only → user tier with their provider/endpoint/model', () => {
     const r = resolveAIConfig(
-      { ...DEFAULT_AI_CONFIG, providerId: 'openrouter', endpoint: 'https://openrouter.ai/api/v1', apiKey: 'sk-user-own-key', model: 'auto' },
+      { ...getDefaultAIConfig(), providerId: 'openrouter', endpoint: 'https://openrouter.ai/api/v1', apiKey: 'sk-user-own-key', model: 'auto' },
       ENGINE_OFF,
     );
     expect(r.tier).toBe('user');
@@ -65,14 +65,14 @@ describe('resolveAIConfig precedence', () => {
   });
 
   it('4. all configured → user key takes precedence over engine + built-in', () => {
-    const r = resolveAIConfig({ ...DEFAULT_AI_CONFIG, apiKey: 'sk-user-own-key' }, ENGINE_ON);
+    const r = resolveAIConfig({ ...getDefaultAIConfig(), apiKey: 'sk-user-own-key' }, ENGINE_ON);
     expect(r.tier).toBe('user');
     expect(r.apiKey).toBe('sk-user-own-key');
   });
 
   it('7. engine disabled by operator → falls through to the built-in tier', () => {
     const r = resolveAIConfig(
-      { ...DEFAULT_AI_CONFIG, apiKey: '' },
+      { ...getDefaultAIConfig(), apiKey: '' },
       { ...ENGINE_ON, enabled: false },
     );
     expect(r.tier).toBe('community');
@@ -80,7 +80,7 @@ describe('resolveAIConfig precedence', () => {
 
   it('keyless provider selection (Ollama) beats engine + built-in tiers', () => {
     const r = resolveAIConfig(
-      { ...DEFAULT_AI_CONFIG, providerId: 'ollama', endpoint: 'http://localhost:11434/v1', apiKey: '' },
+      { ...getDefaultAIConfig(), providerId: 'ollama', endpoint: 'http://localhost:11434/v1', apiKey: '' },
       ENGINE_ON,
     );
     expect(r.tier).toBe('keyless');
@@ -90,15 +90,15 @@ describe('resolveAIConfig precedence', () => {
 
 describe('secrecy invariants', () => {
   it('5/6. the engine tier never puts any key into client config', () => {
-    const r = resolveAIConfig({ ...DEFAULT_AI_CONFIG, apiKey: '' }, ENGINE_ON);
+    const r = resolveAIConfig({ ...getDefaultAIConfig(), apiKey: '' }, ENGINE_ON);
     expect(r.apiKey).toBe('');
     // The masked tail is display metadata, not credential material.
     expect(JSON.stringify(r)).not.toContain('sk-');
   });
 
   it('hasOwnAIKey: whitespace is not a key', () => {
-    expect(hasOwnAIKey({ ...DEFAULT_AI_CONFIG, apiKey: '   ' })).toBe(false);
-    expect(hasOwnAIKey({ ...DEFAULT_AI_CONFIG, apiKey: 'sk-x' })).toBe(true);
+    expect(hasOwnAIKey({ ...getDefaultAIConfig(), apiKey: '   ' })).toBe(false);
+    expect(hasOwnAIKey({ ...getDefaultAIConfig(), apiKey: 'sk-x' })).toBe(true);
   });
 
   it('engineAIAvailable requires configured AND enabled', () => {

@@ -43,6 +43,15 @@ import {
   buildBraveSearchUrl,
   type BraveProxyEnv,
 } from './src/lib/providers/braveProxy';
+import { ENGINE_PROFILE } from './src/lib/engine/profile';
+
+/**
+ * The deployment's engine AI defaults (endpoint / model / provider label /
+ * system prompt), injected into the shared proxy logic. This worker is an
+ * APPLICATION deployment artifact — the profile import belongs here, never
+ * inside the shared engineProxy module.
+ */
+const AI_DEFAULTS = ENGINE_PROFILE.ai;
 
 interface Env extends EngineAIEnv, BraveProxyEnv {
   ASSETS?: { fetch: (request: Request) => Promise<Response> };
@@ -117,7 +126,7 @@ function rateLimited(ip: string): boolean {
 
 /** Forward a validated chat request to the configured provider. */
 async function proxyChat(request: Request, env: Env): Promise<Response> {
-  const config = await readEngineConfig(env);
+  const config = await readEngineConfig(env, AI_DEFAULTS);
   if (!config || !config.enabled) {
     return json({ error: { message: 'Engine AI is not configured on this deployment', type: 'unavailable' } }, 503, request);
   }
@@ -145,7 +154,7 @@ async function proxyChat(request: Request, env: Env): Promise<Response> {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${config.apiKey}`, // server-side only, never logged
     },
-    body: JSON.stringify(buildUpstreamBody(payload, config)),
+    body: JSON.stringify(buildUpstreamBody(payload, config, AI_DEFAULTS.systemPrompt)),
     signal: AbortSignal.timeout(60_000),
   }).catch(() => null);
 
@@ -170,7 +179,7 @@ async function proxyChat(request: Request, env: Env): Promise<Response> {
 
 /** Proxied model list for the admin "Load models" helper. */
 async function proxyModels(env: Env): Promise<Response> {
-  const config = await readEngineConfig(env);
+  const config = await readEngineConfig(env, AI_DEFAULTS);
   if (!config) {
     return json({ error: { message: 'Engine AI is not configured', type: 'unavailable' } }, 503);
   }
@@ -216,8 +225,8 @@ async function handleAdmin(request: Request, env: Env): Promise<Response> {
     return json({ error: { message: action, type: 'invalid_request' } }, 400);
   }
 
-  const current = await readEngineConfig(env);
-  const next = applyAdminAction(current, action);
+  const current = await readEngineConfig(env, AI_DEFAULTS);
+  const next = applyAdminAction(current, action, AI_DEFAULTS);
   if (typeof next === 'string') {
     return json({ error: { message: next, type: 'invalid_request' } }, 400);
   }
@@ -279,7 +288,7 @@ export default {
         return handleOptions(request);
       }
       if (url.pathname === '/api/ai/status' && request.method === 'GET') {
-        return json(buildPublicStatus(await readEngineConfig(env)), 200, request);
+        return json(buildPublicStatus(await readEngineConfig(env, AI_DEFAULTS)), 200, request);
       }
       if (url.pathname === '/api/ai/models' && request.method === 'GET') {
         return proxyModels(env);

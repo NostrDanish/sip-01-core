@@ -25,7 +25,7 @@
 
 import { getAIProvider } from '@/lib/ai/registry';
 import type { EngineAIStatus } from '@/lib/ai/engineProxy';
-import { ENGINE_PROFILE } from '@/lib/engine/profile';
+import { getEngineConfig } from '@/lib/engineConfig';
 import { readStoredWithLegacy, writeStoredCanonical } from '@/lib/storageMigration';
 
 export type { EngineAIStatus } from '@/lib/ai/engineProxy';
@@ -73,14 +73,23 @@ export interface AIConfig {
   includeNostr: boolean;
 }
 
-export const DEFAULT_AI_CONFIG: AIConfig = {
-  enabled: ENGINE_PROFILE.ai.enabledDefault,
-  providerId: ENGINE_PROFILE.ai.providerId,
-  endpoint: ENGINE_PROFILE.ai.endpoint,
-  apiKey: '',
-  model: ENGINE_PROFILE.ai.model,
-  includeNostr: false,
-};
+/**
+ * First-run AI defaults from the host engine (via the config seam).
+ * A FUNCTION, not a module-scope constant: the host injects its profile at
+ * bootstrap, and module evaluation order would freeze neutral defaults
+ * into a top-level const. Call time is always after bootstrap.
+ */
+export function getDefaultAIConfig(): AIConfig {
+  const ai = getEngineConfig().ai;
+  return {
+    enabled: ai.enabledDefault,
+    providerId: ai.providerId,
+    endpoint: ai.endpoint,
+    apiKey: '',
+    model: ai.model,
+    includeNostr: false,
+  };
+}
 
 /** True when the user has pasted their own API key (top precedence). */
 export function hasOwnAIKey(cfg: AIConfig): boolean {
@@ -167,11 +176,11 @@ export function resolveAIConfig(cfg: AIConfig, engine?: EngineAIStatus | null): 
 export function getAIConfig(): AIConfig {
   try {
     const raw = readStoredWithLegacy(LS_KEY, LEGACY_LS_KEY);
-    if (!raw) return { ...DEFAULT_AI_CONFIG };
+    if (!raw) return getDefaultAIConfig();
     const parsed = JSON.parse(raw) as Partial<AIConfig>;
-    return { ...DEFAULT_AI_CONFIG, ...parsed };
+    return { ...getDefaultAIConfig(), ...parsed };
   } catch {
-    return { ...DEFAULT_AI_CONFIG };
+    return getDefaultAIConfig();
   }
 }
 

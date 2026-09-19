@@ -9,7 +9,7 @@
  * disclosed in Settings → AI.
  */
 import { proxiedFetch, isLoopbackOrPrivateUrl } from '@/lib/corsProxy';
-import { ANSWER_SYSTEM_PROMPT, buildEvidencePrompt } from './prompts';
+import { getAnswerSystemPrompt, buildEvidencePrompt } from './prompts';
 import type { AIProvider, AIModel, AIAnswerRequest, AIAnswer } from './types';
 
 interface OpenAIModelsResponse {
@@ -77,7 +77,9 @@ export function createOpenAICompatibleProvider(partial: {
       }
 
       const messages = [
-        { role: 'system', content: ANSWER_SYSTEM_PROMPT },
+        // The system prompt is engine policy, resolved at call time from the
+        // host-injected config (never a per-request parameter).
+        { role: 'system', content: getAnswerSystemPrompt() },
         { role: 'user', content: buildEvidencePrompt(req.query, req.evidence) },
       ];
 

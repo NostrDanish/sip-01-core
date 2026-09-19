@@ -6,20 +6,30 @@
  * evidence doesn't cover the question. This turns the LLM from a generic
  * chatbot into an evidence synthesizer sitting on the federated index.
  *
- * The system prompt lives in the engine profile (src/lib/engine/profile.ts)
- * — the same prompt is injected server-side on the engine tier and used
- * client-side for user-BYOK calls.
+ * The system prompt is engine policy: the host application injects it via
+ * the engine config seam (src/lib/engineConfig.ts) at startup. Until
+ * configured, a neutral brand-free default applies. The same prompt is
+ * injected server-side on the engine tier (worker) so clients cannot
+ * override it there.
  */
-import { ENGINE_PROFILE } from '@/lib/engine/profile';
+import { getEngineConfig } from '@/lib/engineConfig';
 import type { AIEvidenceItem } from './types';
 
-export const ANSWER_SYSTEM_PROMPT = ENGINE_PROFILE.ai.systemPrompt;
+/** The active engine system prompt (host-injected; neutral default until configured). */
+export function getAnswerSystemPrompt(): string {
+  return getEngineConfig().ai.systemPrompt;
+}
 
-/** Build the user message: query + numbered evidence block. */
+/** Build the user-turn evidence prompt: the query plus numbered evidence. */
 export function buildEvidencePrompt(query: string, evidence: AIEvidenceItem[]): string {
   const block = evidence
     .map((e) => `[${e.n}]\ntitle: ${e.title}\nurl: ${e.url}\nsnippet: ${e.snippet}`)
     .join('\n\n');
+  return `QUERY:
+${query}
 
-  return `QUERY:\n${query}\n\nEVIDENCE:\n${block}\n\nAnswer the query. End with a "Sources:" section listing the [n] references you actually used, one per line, exactly like "[1] <title>".`;
+EVIDENCE:
+${block}
+
+Answer the query. End with a "Sources:" section listing the [n] references you actually used, one per line, exactly like "[1] <title>".`;
 }

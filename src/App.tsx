@@ -16,6 +16,7 @@ import { AppConfig } from '@/contexts/AppContext';
 import { APP_RELAYS } from '@/lib/appRelays';
 import { getBrowserLanguage } from '@/lib/languageFilter';
 import { ENGINE_PROFILE } from '@/lib/engine/profile';
+import { configureEngine } from '@/lib/engineConfig';
 import { readStoredWithLegacy } from '@/lib/storageMigration';
 import AppRouter from './AppRouter';
 
@@ -24,6 +25,20 @@ import AppRouter from './AppRouter';
 // Runs at module scope, before AppProvider's initializer reads storage.
 const APP_STORAGE_KEY = 'dsearch:app-config';
 readStoredWithLegacy(APP_STORAGE_KEY, 'nostr:app-config');
+
+/**
+ * Inject this application's identity into the host-agnostic engine.
+ * Engine internals (providers, ranking, AI layer) read this via
+ * getEngineConfig() — they never import the app profile directly.
+ */
+configureEngine({
+  id: ENGINE_PROFILE.id,
+  search: {
+    brave: ENGINE_PROFILE.search.brave,
+    indexerSource: ENGINE_PROFILE.search.indexerSource,
+  },
+  ai: ENGINE_PROFILE.ai,
+});
 
 const head = createHead({
   plugins: [

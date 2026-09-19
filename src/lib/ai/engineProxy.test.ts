@@ -15,8 +15,8 @@ import {
   applyAdminAction,
   readEngineConfig,
   writeEngineConfig,
-  DEFAULT_ENGINE_MODEL,
   type EngineAIConfig,
+  type EngineAIDefaults,
   type KVLike,
 } from './engineProxy';
 
@@ -26,6 +26,14 @@ const CONFIG: EngineAIConfig = {
   model: 'qwen/qwen-2.5-7b-instruct',
   apiKey: 'sk-test-secret-key-1234567890abcdef',
   providerName: 'PPQ.ai',
+};
+
+/** Host-injected defaults (the deployment's profile values). */
+const DEFAULTS: EngineAIDefaults = {
+  endpoint: 'https://api.ppq.ai/v1',
+  model: 'qwen/qwen-2.5-7b-instruct',
+  providerName: 'PPQ.ai',
+  systemPrompt: 'TEST ENGINE SYSTEM PROMPT',
 };
 
 /* ─── Status secrecy (spec #5) ─── */
@@ -75,11 +83,29 @@ describe('validateChatPayload', () => {
 
 describe('buildUpstreamBody', () => {
   it('forces the operator model and modern token param', () => {
-    const body = buildUpstreamBody({ messages: [{ role: 'user', content: 'hi' }], maxTokens: 500 }, CONFIG);
+    const body = buildUpstreamBody({ messages: [{ role: 'user', content: 'hi' }], maxTokens: 500 }, CONFIG, DEFAULTS.systemPrompt);
     expect(body.model).toBe(CONFIG.model);
     expect(body.max_completion_tokens).toBe(500);
     expect(body).not.toHaveProperty('max_tokens');
     expect(JSON.stringify(body)).not.toContain(CONFIG.apiKey);
+  });
+
+  it('injects the host-supplied system prompt and strips client system messages', () => {
+    const body = buildUpstreamBody(
+      {
+        messages: [
+          { role: 'system', content: 'client-injected override attempt' },
+          { role: 'user', content: 'hi' },
+        ],
+        maxTokens: 500,
+      },
+      CONFIG,
+      DEFAULTS.systemPrompt,
+    );
+    const messages = body.messages as { role: string; content: string }[];
+    expect(messages[0]).toEqual({ role: 'system', content: 'TEST ENGINE SYSTEM PROMPT' });
+    expect(messages.filter((m) => m.role === 'system')).toHaveLength(1);
+    expect(JSON.stringify(messages)).not.toContain('override attempt');
   });
 });
 
@@ -166,23 +192,23 @@ describe('parseAdminAction', () => {
 
 describe('applyAdminAction', () => {
   it('set writes a full config; clear deletes; set-enabled toggles (spec #7)', () => {
-    const set = applyAdminAction(null, { action: 'set', apiKey: 'sk-new-key-here' });
+    const set = applyAdminAction(null, { action: 'set', apiKey: 'sk-new-key-here' }, DEFAULTS);
     expect(set).not.toBeNull();
     if (set && typeof set !== 'string') {
       expect(set.apiKey).toBe('sk-new-key-here');
-      expect(set.model).toBe(DEFAULT_ENGINE_MODEL);
+      expect(set.model).toBe(DEFAULTS.model);
       expect(set.enabled).toBe(true);
     }
 
-    const toggled = applyAdminAction(CONFIG, { action: 'set-enabled', enabled: false });
+    const toggled = applyAdminAction(CONFIG, { action: 'set-enabled', enabled: false }, DEFAULTS);
     expect(toggled).toEqual({ ...CONFIG, enabled: false });
 
-    expect(applyAdminAction(CONFIG, { action: 'clear' })).toBeNull();
+    expect(applyAdminAction(CONFIG, { action: 'clear' }, DEFAULTS)).toBeNull();
     // Clearing → buildPublicStatus reports unconfigured → engine AI off.
     expect(buildPublicStatus(null).configured).toBe(false);
 
     // Toggle without a config is a graceful error, not a crash.
-    expect(typeof applyAdminAction(null, { action: 'set-enabled', enabled: true })).toBe('string');
+    expect(typeof applyAdminAction(null, { action: 'set-enabled', enabled: true }, DEFAULTS)).toBe('string');
   });
 });
 
@@ -200,19 +226,30 @@ describe('readEngineConfig / writeEngineConfig', () => {
   }
 
   it('returns null with nothing configured (fresh clone)', async () => {
-    expect(await readEngineConfig({})).toBeNull();
+    expect(await readEngineConfig({}, DEFAULTS)).toBeNull();
   });
 
-  it('env-var config works without KV', async () => {
-    const cfg = await readEngineConfig({ AI_API_KEY: 'sk-env-key' });
+  it('env-var config works without KV, falling back to host defaults', async () => {
+    const cfg = await readEngineConfig({ AI_API_KEY: 'sk-env-key' }, DEFAULTS);
     expect(cfg?.apiKey).toBe('sk-env-key');
-    expect(cfg?.model).toBe(DEFAULT_ENGINE_MODEL);
+    expect(cfg?.model).toBe(DEFAULTS.model);
+    expect(cfg?.endpoint).toBe(DEFAULTS.endpoint);
+    expect(cfg?.providerName).toBe(DEFAULTS.providerName);
+  });
+
+  it('env vars override the host defaults', async () => {
+    const cfg = await readEngineConfig(
+      { AI_API_KEY: 'sk-env-key', AI_MODEL: 'custom/model', AI_PROVIDER_ENDPOINT: 'https://other.example.com/v1' },
+      DEFAULTS,
+    );
+    expect(cfg?.model).toBe('custom/model');
+    expect(cfg?.endpoint).toBe('https://other.example.com/v1');
   });
 
   it('KV config takes precedence over env vars', async () => {
     const kv = fakeKV();
     await writeEngineConfig(kv, CONFIG);
-    const cfg = await readEngineConfig({ AI_CONFIG_KV: kv, AI_API_KEY: 'sk-env-key' });
+    const cfg = await readEngineConfig({ AI_CONFIG_KV: kv, AI_API_KEY: 'sk-env-key' }, DEFAULTS);
     expect(cfg?.apiKey).toBe(CONFIG.apiKey);
   });
 

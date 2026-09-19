@@ -15,7 +15,7 @@
  * coverage.
  */
 import { getBraveApiKey } from './brave';
-import { ENGINE_PROFILE } from '@/lib/engine/profile';
+import { getEngineConfig } from '@/lib/engineConfig';
 
 export interface WebEngineBases {
   brave: number;
@@ -25,9 +25,10 @@ export interface WebEngineBases {
 
 /** Base scores for the three clearnet web engines, given the current key state. */
 export function getWebEngineBases(): WebEngineBases {
-  // User BYOK or an engine profile that ships Brave as a first-class source
+  // User BYOK or a host engine that ships Brave as a first-class source
   // (the worker may supply the key server-side — see providers/brave.ts).
-  const braveActive = getBraveApiKey().length > 0 || ENGINE_PROFILE.search.brave;
+  // The host's choice arrives via the engine config seam, not an app import.
+  const braveActive = getBraveApiKey().length > 0 || getEngineConfig().search.brave;
   return braveActive
     ? { brave: 80, duckduckgo: 79, searxng: 78 }
     : { brave: 79, duckduckgo: 80, searxng: 78 };
