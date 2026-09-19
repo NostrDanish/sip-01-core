@@ -9,11 +9,13 @@ import { describe, it, expect } from 'vitest';
 
 import {
   ALL_PROVIDERS,
+  createProviderRegistry,
   getAvailableSources,
   getProvider,
   getProvidersForPrivacy,
   getProvidersForSource,
 } from './registry';
+import type { SearchProvider } from './types';
 
 describe('ALL_PROVIDERS catalog', () => {
   it('every provider has a unique id and complete contract metadata', () => {
@@ -88,5 +90,34 @@ describe('lookup helpers', () => {
     const sources = getAvailableSources();
     expect(sources).toContain('nostr');
     expect(sources).toContain('web');
+  });
+});
+
+describe('createProviderRegistry (the plugin seam)', () => {
+  const proprietary: SearchProvider = {
+    id: 'acme-secret-engine',
+    name: 'ACME Internal',
+    source: 'web',
+    privacy: 'direct',
+    privacyNote: 'Test double.',
+    search: async () => ({ results: [] }),
+  };
+
+  it('composes built-in providers with external (e.g. closed-source) ones', () => {
+    const registry = createProviderRegistry([...ALL_PROVIDERS, proprietary]);
+    expect(registry.getProvider('acme-secret-engine')).toBe(proprietary);
+    expect(registry.getProvidersForSource('web').map((p) => p.id)).toContain('acme-secret-engine');
+    expect(registry.all).toHaveLength(ALL_PROVIDERS.length + 1);
+  });
+
+  it('supports a deliberately minimal engine (protocol-only catalog)', () => {
+    const minimal = createProviderRegistry(ALL_PROVIDERS.filter((p) => p.privacy === 'nostr'));
+    expect(minimal.getProvidersForSource('all').every((p) => p.privacy === 'nostr')).toBe(true);
+    expect(minimal.getProvider('searxng')).toBeUndefined();
+  });
+
+  it('custom registries do not leak into the default catalog', () => {
+    createProviderRegistry([...ALL_PROVIDERS, proprietary]);
+    expect(getProvider('acme-secret-engine')).toBeUndefined();
   });
 });
