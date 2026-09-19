@@ -7,7 +7,7 @@ import {
   useNostrLogin,
 } from '@nostrify/react/login';
 import { useAppContext } from '@/hooks/useAppContext';
-import { APP_RELAYS } from '@/lib/appRelays';
+import { APP_RELAYS } from '@/app/relayConfig';
 import { toSecureRelayUrl } from '@/lib/relayUrls';
 
 // NOTE: This file should not be edited except for adding new login methods.

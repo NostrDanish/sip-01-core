@@ -1,18 +1,19 @@
 /**
- * Characterization tests — relay pool machinery.
+ * Characterization tests — generic relay pool machinery (SIP-01 core).
  *
- * Pin before extraction: URL normalization, the effective-pool computation
- * (defaults − hidden + customs, deduped), and the hide/restore round-trip.
- * These pools are where the community index lives — silent breakage here
- * silently empties search results.
+ * The machinery is host-agnostic: default relay lists and storage key names
+ * arrive via the relayConfig seam. These tests exercise it against a TEST
+ * config (not the Dsearch deployment's data — that is pinned separately in
+ * src/app/relayConfig.test.ts).
+ *
+ * Pins: URL normalization, the effective-pool computation (defaults −
+ * hidden + customs, deduped), the hide/restore round-trip, and legacy-key
+ * read-through migration. These pools are where the community index lives —
+ * silent breakage here silently empties search results.
  */
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 import {
-  SEARCH_RELAYS,
-  INDEX_RELAYS,
-  GIT_RELAYS,
-  WIKI_RELAYS,
   getSearchRelayUrls,
   getCustomSearchRelays,
   addCustomSearchRelay,
@@ -25,10 +26,44 @@ import {
   getGitRelayUrls,
   getWikiRelayUrls,
 } from './appRelays';
+import { configureRelays, resetRelayConfig, type RelayPoolConfig } from './relayConfig';
 import { normalizeRelayUrl, toSecureRelayUrl } from './relayUrls';
+
+const TEST_SEARCH_RELAYS = ['wss://search-a.example.com/', 'wss://search-b.example.com/'];
+const TEST_INDEX_RELAYS = ['wss://index-a.example.com/', 'wss://index-b.example.com/'];
+const TEST_GIT_RELAYS = ['wss://git-a.example.com/'];
+const TEST_WIKI_RELAYS = ['wss://wiki-a.example.com/'];
+
+const TEST_RELAY_CONFIG: RelayPoolConfig = {
+  searchRelays: TEST_SEARCH_RELAYS,
+  indexRelays: TEST_INDEX_RELAYS,
+  gitRelays: TEST_GIT_RELAYS,
+  wikiRelays: TEST_WIKI_RELAYS,
+  storageKeys: {
+    customSearchRelays: 'test:search-relays:custom',
+    hiddenSearchRelays: 'test:search-relays:hidden',
+    customIndexRelays: 'test:index-relays:custom',
+    hiddenIndexRelays: 'test:index-relays:hidden',
+    customGitRelays: 'test:git-relays:custom',
+    hiddenGitRelays: 'test:git-relays:hidden',
+    customWikiRelays: 'test:wiki-relays:custom',
+    hiddenWikiRelays: 'test:wiki-relays:hidden',
+    discoveredRelays: 'test:relay-discovery:verified',
+    relayDiscoveryEnabled: 'test:relay-discovery:enabled',
+    appConfig: 'test:app-config',
+  },
+  legacyStorageKeys: {
+    'test:search-relays:custom': 'legacy:search-relays:custom',
+  },
+};
 
 beforeEach(() => {
   localStorage.clear();
+  configureRelays(TEST_RELAY_CONFIG);
+});
+
+afterEach(() => {
+  resetRelayConfig();
 });
 
 describe('normalizeRelayUrl', () => {
@@ -55,18 +90,20 @@ describe('toSecureRelayUrl', () => {
   });
 });
 
-describe('effective pools', () => {
-  it('returns the shipped defaults in order when storage is empty', () => {
-    expect(getSearchRelayUrls()).toEqual([...SEARCH_RELAYS]);
-    expect(getIndexRelayUrls()).toEqual([...INDEX_RELAYS]);
-    expect(getGitRelayUrls()).toEqual([...GIT_RELAYS]);
-    expect(getWikiRelayUrls()).toEqual([...WIKI_RELAYS]);
+describe('effective pools (generic machinery, test config)', () => {
+  it('returns the configured defaults in order when storage is empty', () => {
+    expect(getSearchRelayUrls()).toEqual(TEST_SEARCH_RELAYS);
+    expect(getIndexRelayUrls()).toEqual(TEST_INDEX_RELAYS);
+    expect(getGitRelayUrls()).toEqual(TEST_GIT_RELAYS);
+    expect(getWikiRelayUrls()).toEqual(TEST_WIKI_RELAYS);
   });
 
   it('adds custom relays after defaults, normalized and deduplicated', () => {
     const added = addCustomSearchRelay('custom.example.com');
     expect(added).toBe('wss://custom.example.com/');
     expect(getCustomSearchRelays()).toEqual(['wss://custom.example.com/']);
+    // Customs persist under the CONFIGURED key, not a hard-coded one.
+    expect(localStorage.getItem('test:search-relays:custom')).toBe('["wss://custom.example.com/"]');
     const pool = getSearchRelayUrls();
     expect(pool[pool.length - 1]).toBe('wss://custom.example.com/');
 
@@ -75,19 +112,20 @@ describe('effective pools', () => {
     expect(getSearchRelayUrls().filter((u) => u === 'wss://custom.example.com/')).toHaveLength(1);
 
     removeCustomSearchRelay('wss://custom.example.com/');
-    expect(getSearchRelayUrls()).toEqual([...SEARCH_RELAYS]);
+    expect(getSearchRelayUrls()).toEqual(TEST_SEARCH_RELAYS);
   });
 
   it('hides and restores default relays', () => {
-    const victim = SEARCH_RELAYS[0];
+    const victim = TEST_SEARCH_RELAYS[0];
     hideDefaultSearchRelay(victim);
     expect(getSearchRelayUrls()).not.toContain(victim);
+    expect(localStorage.getItem('test:search-relays:hidden')).toBe(`["${victim}"]`);
     restoreDefaultSearchRelay(victim);
     expect(getSearchRelayUrls()).toContain(victim);
   });
 
   it('re-adding a hidden default as a custom un-hides it', () => {
-    const victim = SEARCH_RELAYS[SEARCH_RELAYS.length - 1];
+    const victim = TEST_SEARCH_RELAYS[TEST_SEARCH_RELAYS.length - 1];
     hideDefaultSearchRelay(victim);
     expect(getSearchRelayUrls()).not.toContain(victim);
     addCustomSearchRelay(victim);
@@ -96,9 +134,19 @@ describe('effective pools', () => {
 
   it('index pool customization is independent from the search pool', () => {
     addCustomIndexRelay('indexer.example.com');
-    hideDefaultIndexRelay(INDEX_RELAYS[0]);
+    hideDefaultIndexRelay(TEST_INDEX_RELAYS[0]);
     expect(getIndexRelayUrls()).toContain('wss://indexer.example.com/');
-    expect(getIndexRelayUrls()).not.toContain(INDEX_RELAYS[0]);
-    expect(getSearchRelayUrls()).toEqual([...SEARCH_RELAYS]); // untouched
+    expect(getIndexRelayUrls()).not.toContain(TEST_INDEX_RELAYS[0]);
+    expect(getSearchRelayUrls()).toEqual(TEST_SEARCH_RELAYS); // untouched
+  });
+
+  it('reads through to a configured legacy key and forward-migrates on first read', () => {
+    // Existing user state under the legacy key only.
+    localStorage.setItem('legacy:search-relays:custom', '["wss://old.example.com/"]');
+    expect(getCustomSearchRelays()).toEqual(['wss://old.example.com/']);
+    // First read migrated the value to the canonical key and cleared the legacy one.
+    expect(localStorage.getItem('test:search-relays:custom')).toBe('["wss://old.example.com/"]');
+    expect(localStorage.getItem('legacy:search-relays:custom')).toBeNull();
+    expect(getSearchRelayUrls()).toContain('wss://old.example.com/');
   });
 });

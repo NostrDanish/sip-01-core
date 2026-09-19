@@ -23,7 +23,8 @@
  */
 import type { NostrEvent, NostrFilter } from '@nostrify/nostrify';
 
-import { SEARCH_RELAYS, getSearchRelayUrls, getIndexRelayUrls } from '@/lib/appRelays';
+import { getSearchRelayUrls, getIndexRelayUrls } from '@/lib/appRelays';
+import { getRelayConfig } from '@/lib/relayConfig';
 import { getSearchRelay } from '@/lib/searchRelays';
 import { refreshDiscoveredRelays } from '@/lib/relayDiscovery';
 import { WEB_INDEX_KIND, parseIndexEvent, verifyObservation, type IndexObservation } from '@/protocol/webIndex';
@@ -108,7 +109,7 @@ export const webIndexProvider: SearchProvider = {
     // Kick off (or refresh) relay auto-discovery in the background — the
     // SIP-01 uncaged_index block in a relay's NIP-11 doc earns it a spot in
     // the index pool on later searches.
-    void refreshDiscoveredRelays(false, undefined, SEARCH_RELAYS);
+    void refreshDiscoveredRelays(false, undefined, getRelayConfig().searchRelays);
 
     // NIP-50 acceleration (spec §15): safe on every relay — relays that
     // don't support search ignore the keyword; SIP-01-aware relays answer

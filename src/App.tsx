@@ -13,10 +13,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { NostrLoginProvider } from '@nostrify/react/login';
 import { AppProvider } from '@/components/AppProvider';
 import { AppConfig } from '@/contexts/AppContext';
-import { APP_RELAYS } from '@/lib/appRelays';
+import { APP_RELAYS, DSEARCH_RELAY_CONFIG } from '@/app/relayConfig';
 import { getBrowserLanguage } from '@/lib/languageFilter';
 import { ENGINE_PROFILE } from '@/app/profile';
 import { configureEngine } from '@/lib/engineConfig';
+import { configureRelays } from '@/lib/relayConfig';
 import { readStoredWithLegacy } from '@/lib/storageMigration';
 import AppRouter from './AppRouter';
 
@@ -39,6 +40,13 @@ configureEngine({
   },
   ai: ENGINE_PROFILE.ai,
 });
+
+/**
+ * Inject this application's relay identity (default pools + dsearch:*
+ * storage keys) into the host-agnostic core pool machinery. Core internals
+ * (appRelays.ts, relayDiscovery.ts) read this via getRelayConfig().
+ */
+configureRelays(DSEARCH_RELAY_CONFIG);
 
 const head = createHead({
   plugins: [

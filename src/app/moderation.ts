@@ -31,7 +31,8 @@
 import type { NostrEvent } from '@nostrify/nostrify';
 
 import { normalizeIndexUrl } from '@/protocol/webIndex';
-import { APP_RELAYS, getIndexRelayUrls, getSearchRelayUrls } from '@/lib/appRelays';
+import { APP_RELAYS } from '@/app/relayConfig';
+import { getIndexRelayUrls, getSearchRelayUrls } from '@/lib/appRelays';
 import {
   OWNER_PUBKEY,
   DSEARCH_PROTOCOL,

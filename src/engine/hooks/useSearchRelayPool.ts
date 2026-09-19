@@ -1,6 +1,6 @@
 /**
  * Relay pool hooks — React state over the app's relay pools
- * (Dsearch defaults + user customs − hidden defaults), with
+ * (host-configured defaults + user customs − hidden defaults), with
  * Nostra-style latency testing: ping each relay with a tiny query and
  * time the round-trip.
  *
@@ -15,10 +15,6 @@
  */
 import { useCallback, useState } from 'react';
 import {
-  SEARCH_RELAYS,
-  INDEX_RELAYS,
-  GIT_RELAYS,
-  WIKI_RELAYS,
   getCustomSearchRelays,
   addCustomSearchRelay,
   removeCustomSearchRelay,
@@ -34,6 +30,7 @@ import {
   gitRelays,
   wikiRelays,
 } from '@/lib/appRelays';
+import { getRelayConfig } from '@/lib/relayConfig';
 import { getSearchRelay } from '@/lib/searchRelays';
 import { getDiscoveredSearchRelays, getDiscoveredIndexRelays } from '@/lib/relayDiscovery';
 export type SearchRelayOrigin = 'default' | 'discovered' | 'custom';
@@ -45,7 +42,11 @@ export interface SearchRelayEntry {
   latencyMs?: number;
 }
 interface PoolStore {
-  defaults: readonly string[];
+  /**
+   * Host-configured default relays, read at call time (the relay config is
+   * injected at startup — module-scope capture would read it too early).
+   */
+  getDefaults: () => readonly string[];
   /**
    * Auto-discovered relays (NIP-11-verified, relayDiscovery.ts). Optional —
    * pools without discovery (git/wiki) omit it.
@@ -66,18 +67,19 @@ interface PoolStore {
 function useRelayPool(store: PoolStore) {
   const buildPool = useCallback((): SearchRelayEntry[] => {
     const hidden = new Set(store.getHidden());
-    const defaults = store.defaults
+    const storeDefaults = store.getDefaults();
+    const defaults = storeDefaults
       .filter((url) => !hidden.has(url))
       .map((url): SearchRelayEntry => ({ url, origin: 'default', status: 'untested' }));
     const discovered = (store.getDiscovered?.() ?? [])
-      .filter((u) => !store.defaults.includes(u) && !hidden.has(u))
+      .filter((u) => !storeDefaults.includes(u) && !hidden.has(u))
       .filter((u, i, arr) => arr.indexOf(u) === i)
       .map((url): SearchRelayEntry => ({ url, origin: 'discovered' as const, status: 'untested' }));
     const discoveredUrls = new Set(discovered.map((d) => d.url));
     const customs = store.getCustoms()
-      .filter((u) => !store.defaults.includes(u) && !discoveredUrls.has(u) && !hidden.has(u))
+      .filter((u) => !storeDefaults.includes(u) && !discoveredUrls.has(u) && !hidden.has(u))
       .filter((u, i, arr) => arr.indexOf(u) === i)
-      .map((url): SearchRelayEntry => ({ url, origin: 'custom', status: 'untested' }));
+      .map((url): SearchRelayEntry => ({ url, origin: 'custom' as const, status: 'untested' }));
     return [...defaults, ...discovered, ...customs];
   }, [store]);
   const [pool, setPool] = useState<SearchRelayEntry[]>(buildPool);
@@ -89,7 +91,7 @@ function useRelayPool(store: PoolStore) {
   }, [store, buildPool]);
   /** Remove a relay — customs are deleted, defaults AND discovered are hidden (restorable). */
   const removeRelay = useCallback((url: string) => {
-    if (store.defaults.includes(url) || (store.getDiscovered?.() ?? []).includes(url)) {
+    if (store.getDefaults().includes(url) || (store.getDiscovered?.() ?? []).includes(url)) {
       store.hideDefault(url);
     } else {
       store.removeCustom(url);
@@ -138,7 +140,7 @@ function useRelayPool(store: PoolStore) {
   return { pool, testing, testRelays, addRelay, removeRelay, restoreDefaults, reload, hiddenCount };
 }
 const SEARCH_POOL_STORE: PoolStore = {
-  defaults: SEARCH_RELAYS,
+  getDefaults: () => getRelayConfig().searchRelays,
   getDiscovered: getDiscoveredSearchRelays,
   getCustoms: getCustomSearchRelays,
   addCustom: addCustomSearchRelay,
@@ -149,7 +151,7 @@ const SEARCH_POOL_STORE: PoolStore = {
   probeKinds: [1],
 };
 const INDEX_POOL_STORE: PoolStore = {
-  defaults: INDEX_RELAYS,
+  getDefaults: () => getRelayConfig().indexRelays,
   getDiscovered: getDiscoveredIndexRelays,
   getCustoms: getCustomIndexRelays,
   addCustom: addCustomIndexRelay,
@@ -160,7 +162,7 @@ const INDEX_POOL_STORE: PoolStore = {
   probeKinds: [39697, 30078],
 };
 const GIT_POOL_STORE: PoolStore = {
-  defaults: GIT_RELAYS,
+  getDefaults: () => getRelayConfig().gitRelays,
   getCustoms: gitRelays.getCustoms,
   addCustom: gitRelays.addCustom,
   removeCustom: gitRelays.removeCustom,
@@ -170,7 +172,7 @@ const GIT_POOL_STORE: PoolStore = {
   probeKinds: [30617],
 };
 const WIKI_POOL_STORE: PoolStore = {
-  defaults: WIKI_RELAYS,
+  getDefaults: () => getRelayConfig().wikiRelays,
   getCustoms: wikiRelays.getCustoms,
   addCustom: wikiRelays.addCustom,
   removeCustom: wikiRelays.removeCustom,

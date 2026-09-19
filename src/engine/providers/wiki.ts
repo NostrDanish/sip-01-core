@@ -2,7 +2,7 @@
  * Nostr Wiki provider — NIP-54 wiki articles from the wiki relay pool.
  *
  * Reads kind 30818 (addressable wiki articles) from the relays wikistr
- * reads (relay.wikifreedia.xyz + friends — see WIKI_RELAYS / Settings →
+ * reads (relay.wikifreedia.xyz + friends — host wiki pool / Settings →
  * Wiki Relays). Read-only. Relays that support NIP-50 answer the `search`
  * keyword; the rest return recent articles and the shared phrase-aware
  * matcher filters client-side.

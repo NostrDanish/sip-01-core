@@ -29,6 +29,7 @@
 
 import { queryRelayPool } from '@/lib/searchRelays';
 import { proxiedFetch } from '@/lib/corsProxy';
+import { getRelayConfig } from '@/lib/relayConfig';
 import { normalizeRelayUrl } from '@/lib/relayUrls';
 import { readStoredWithLegacy, writeStoredCanonical } from '@/lib/storageMigration';
 
@@ -36,17 +37,18 @@ import { readStoredWithLegacy, writeStoredCanonical } from '@/lib/storageMigrati
 /* Constants                                                           */
 /* ------------------------------------------------------------------ */
 
-/** localStorage keys (canonical; legacy keys are read-migrated on first access). */
-const LS_DISCOVERED = 'dsearch:relay-discovery:verified';
-const LS_DISCOVERY_ON = 'dsearch:relay-discovery:enabled';
-const LEGACY_LS_DISCOVERED = '0xsearchstr:relay-discovery:verified';
-const LEGACY_LS_DISCOVERY_ON = '0xsearchstr:relay-discovery:enabled';
+/**
+ * localStorage keys come from the host-injected relay config (relayConfig
+ * seam) and are read at call time; legacy keys are read-migrated on first
+ * access when the host declares them.
+ */
+function storageKeys() {
+  return getRelayConfig().storageKeys;
+}
 
-/** Legacy key for a canonical one, when one exists. */
+/** Legacy key for a canonical one, when the host config declares one. */
 function legacyKeyFor(key: string): string | undefined {
-  if (key === LS_DISCOVERED) return LEGACY_LS_DISCOVERED;
-  if (key === LS_DISCOVERY_ON) return LEGACY_LS_DISCOVERY_ON;
-  return undefined;
+  return getRelayConfig().legacyStorageKeys[key];
 }
 
 /** How long a verified list stays fresh (24h). */
@@ -126,7 +128,7 @@ function writeJson(key: string, value: unknown): void {
 }
 
 export function getDiscoveryCache(): DiscoveryCache | null {
-  return readJson<DiscoveryCache>(LS_DISCOVERED);
+  return readJson<DiscoveryCache>(storageKeys().discoveredRelays);
 }
 
 /**
@@ -134,11 +136,11 @@ export function getDiscoveryCache(): DiscoveryCache | null {
  * adds NIP-11-verified relays, and any of them can be hidden in Settings.
  */
 export function isRelayDiscoveryEnabled(): boolean {
-  return readJson<boolean>(LS_DISCOVERY_ON) !== false;
+  return readJson<boolean>(storageKeys().relayDiscoveryEnabled) !== false;
 }
 
 export function setRelayDiscoveryEnabled(enabled: boolean): void {
-  writeJson(LS_DISCOVERY_ON, enabled);
+  writeJson(storageKeys().relayDiscoveryEnabled, enabled);
 }
 
 /* ------------------------------------------------------------------ */
@@ -150,7 +152,7 @@ export function setRelayDiscoveryEnabled(enabled: boolean): void {
  * NIP-50 (`#N: ['50']` — relays index all single-letter tags, NIP-01).
  * Returns normalized clearnet relay URLs from the `d` tags.
  */
-async function fetchNip66Candidates(signal?: AbortSignal, extraBootstrap: string[] = []): Promise<string[]> {
+async function fetchNip66Candidates(signal?: AbortSignal, extraBootstrap: readonly string[] = []): Promise<string[]> {
   const bootstrap = [...new Set([...NIP66_BOOTSTRAP, ...extraBootstrap])];
   const perRelay = await queryRelayPool(
     bootstrap,
@@ -228,10 +230,12 @@ async function probeRelay(url: string, signal?: AbortSignal): Promise<VerifiedRe
 let discoveryPromise: Promise<VerifiedRelay[]> | null = null;
 
 /** Privacy Mode check — read the stored app config directly (tolerant).
- *  Canonical key first, legacy `nostr:app-config` as read-through. */
+ *  Canonical key first, the host's legacy key as read-through. */
 function isPrivacyModeOn(): boolean {
   try {
-    const raw = readStoredWithLegacy('dsearch:app-config', 'nostr:app-config');
+    const key = storageKeys().appConfig;
+    const legacy = legacyKeyFor(key);
+    const raw = legacy ? readStoredWithLegacy(key, legacy) : localStorage.getItem(key);
     if (!raw) return false;
     const parsed: unknown = JSON.parse(raw);
     return typeof parsed === 'object' && parsed !== null &&
@@ -241,7 +245,7 @@ function isPrivacyModeOn(): boolean {
   }
 }
 
-async function runDiscovery(signal?: AbortSignal, extraBootstrap: string[] = []): Promise<VerifiedRelay[]> {
+async function runDiscovery(signal?: AbortSignal, extraBootstrap: readonly string[] = []): Promise<VerifiedRelay[]> {
   // Phase 1: candidates (Nostr-tier — fine in Privacy Mode).
   const nip66 = await fetchNip66Candidates(signal, extraBootstrap).catch(() => [] as string[]);
   const candidates = [...new Set([...SEED_CANDIDATES, ...nip66])].slice(0, MAX_CANDIDATES);
@@ -273,7 +277,7 @@ async function runDiscovery(signal?: AbortSignal, extraBootstrap: string[] = [])
 export async function refreshDiscoveredRelays(
   force = false,
   signal?: AbortSignal,
-  bootstrapRelays: string[] = [],
+  bootstrapRelays: readonly string[] = [],
 ): Promise<VerifiedRelay[]> {
   if (!isRelayDiscoveryEnabled()) return getDiscoveryCache()?.relays ?? [];
 
@@ -286,7 +290,7 @@ export async function refreshDiscoveredRelays(
         // Only overwrite the cache with a non-empty sweep — an offline
         // moment must not wipe a healthy verified list.
         if (verified.length > 0) {
-          writeJson(LS_DISCOVERED, { relays: verified, fetchedAt: Date.now() } satisfies DiscoveryCache);
+          writeJson(storageKeys().discoveredRelays, { relays: verified, fetchedAt: Date.now() } satisfies DiscoveryCache);
         }
         return verified.length > 0 ? verified : (cache?.relays ?? []);
       })
