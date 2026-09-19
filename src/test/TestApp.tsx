@@ -33,6 +33,16 @@ export function TestApp({ children }: TestAppProps) {
       updatedAt: 0,
     },
     useAppBlossomServers: true,
+    privacyMode: false,
+    autoIndex: false,
+    tabConfig: {
+      order: ['web', 'index', 'all', 'nostr', 'wiki', 'news', 'code', 'tor', 'i2p'],
+      hidden: ['tor', 'i2p'],
+      defaultTab: 'web',
+    },
+    voteWithIdentity: false,
+    disabledProviders: [],
+    languageFilter: [],
   };
 
   return (

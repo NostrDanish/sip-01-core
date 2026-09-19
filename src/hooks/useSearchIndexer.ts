@@ -124,7 +124,6 @@ export function useSearchIndexer() {
 
       const identity = getIndexerIdentity();
       const secretKey = hexToBytes(identity.secretHex);
-      const pubkeyHex = identity.pubkeyHex;
 
       for (const input of observations) {
         try {
@@ -136,7 +135,6 @@ export function useSearchIndexer() {
               created_at: Math.floor(Date.now() / 1000),
               tags: template.tags,
               content: template.content,
-              pubkey: pubkeyHex,
             },
             secretKey,
           );
@@ -173,7 +171,7 @@ export function useSearchIndexer() {
         // 1. Signal: one addressable event per device per term — hash only.
         const signal = buildTermSignalEvent(hash);
         await publishEvent(finalizeEvent(
-          { ...signal, created_at: now, pubkey: identity.pubkeyHex },
+          { ...signal, created_at: now },
           secretKey,
         ));
 
@@ -208,7 +206,7 @@ export function useSearchIndexer() {
 
         const revealEvent = buildTermRevealEvent(hash, query);
         await publishEvent(finalizeEvent(
-          { ...revealEvent, created_at: now, pubkey: identity.pubkeyHex },
+          { ...revealEvent, created_at: now },
           secretKey,
         ));
       } catch {

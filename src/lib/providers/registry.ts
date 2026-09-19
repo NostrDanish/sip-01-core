@@ -80,7 +80,7 @@ export interface ProviderRegistry {
   /** Providers that contribute to a given source tab. */
   getProvidersForSource(source: SourceSelector): SearchProvider[];
   /** Providers filtered by Privacy Mode (Nostr-tier only when enabled). */
-  getProvidersForPrivacy(source: SearchSource | 'all', privacyOnly: boolean): SearchProvider[];
+  getProvidersForPrivacy(source: SourceSelector, privacyOnly: boolean): SearchProvider[];
   /** Get a provider by ID. */
   getProvider(id: string): SearchProvider | undefined;
   /** All unique source categories in this registry. */
@@ -109,7 +109,7 @@ export function createProviderRegistry(providers: readonly SearchProvider[]): Pr
   }
 
   function getProvidersForPrivacy(
-    source: SearchSource | 'all',
+    source: SourceSelector,
     privacyOnly: boolean,
   ): SearchProvider[] {
     const selected = getProvidersForSource(source);
@@ -144,7 +144,7 @@ export function getProvidersForSource(source: SourceSelector): SearchProvider[] 
  * no clearnet APIs, no CORS proxies, no third-party servers.
  */
 export function getProvidersForPrivacy(
-  source: SearchSource | 'all',
+  source: SourceSelector,
   privacyOnly: boolean,
 ): SearchProvider[] {
   return defaultRegistry.getProvidersForPrivacy(source, privacyOnly);

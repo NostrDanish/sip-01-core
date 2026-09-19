@@ -78,7 +78,10 @@ function writeStored(secretHex: string): void {
 
 /** Generate a fresh secret key as 64-char hex, robust to lib return type. */
 function newSecretHex(): string {
-  const sk = generateSecretKey();
+  // Typed as Uint8Array in this nostr-tools version; the string branch is a
+  // runtime guard for versions that returned hex — keep it, but widen the
+  // type so the guard isn't narrowed to `never`.
+  const sk: unknown = generateSecretKey();
   return typeof sk === 'string' ? sk.toLowerCase() : bytesToHex(sk as Uint8Array);
 }
 

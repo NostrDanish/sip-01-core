@@ -341,12 +341,18 @@ export function useInstantAnswer(query: string, enabled: boolean): {
     retry: 0,
   });
 
-  const answer = calculator
-    ?? nip19Answer
-    ?? (nip05Enabled ? nip05Answer ?? null : null)
-    ?? (urlEnabled ? urlAnswer ?? null : null)
-    ?? (wikiEnabled ? wikiAnswer ?? null : null)
-    ?? (ddgEnabled ? ddgAnswer ?? null : null);
+  // First non-null candidate wins, in priority order. (Written as a list
+  // rather than a `??` chain: TS6's aliased-condition narrowing treats the
+  // `*Enabled` flags as proving the earlier candidates null and rejects the
+  // chain as "always nullish".)
+  const answer = [
+    calculator,
+    nip19Answer,
+    nip05Enabled ? nip05Answer ?? null : null,
+    urlEnabled ? urlAnswer ?? null : null,
+    wikiEnabled ? wikiAnswer ?? null : null,
+    ddgEnabled ? ddgAnswer ?? null : null,
+  ].find((candidate) => candidate != null) ?? null;
 
   return { answer, isLoading: wikiEnabled && isLoading };
 }
