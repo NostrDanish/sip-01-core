@@ -16,7 +16,7 @@
  * (author filter = the trust boundary). Un-hiding publishes a NIP-09
  * deletion of the label.
  */
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useSeoMeta } from '@unhead/react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -1019,10 +1019,10 @@ function AffiliatesTab() {
   const [testUrl, setTestUrl] = useState('');
   const [pending, setPending] = useState(false);
 
-  // One-time sync when the published rules land from the relays.
-  useEffect(() => {
-    if (draft === null && !isLoading) setDraft(rules);
-  }, [draft, isLoading, rules]);
+  // One-time sync when the published rules land from the relays — adjusted
+  // during render; the `draft === null` guard makes it converge after one
+  // pass, so there is no render loop.
+  if (draft === null && !isLoading) setDraft(rules);
 
   const loaded = draft !== null;
   const current = draft ?? [];
@@ -1332,13 +1332,13 @@ function ReferralsTab() {
   const [windowDays, setWindowDays] = useState('');
   const [pending, setPending] = useState(false);
 
-  // One-time sync when the published config lands from the relays.
-  useEffect(() => {
-    if (enabled === null && !isLoading) {
-      setEnabled(config.enabled);
-      setWindowDays(String(config.attributionWindowDays));
-    }
-  }, [enabled, isLoading, config]);
+  // One-time sync when the published config lands from the relays —
+  // adjusted during render; the `enabled === null` guard makes it converge
+  // after one pass, so there is no render loop.
+  if (enabled === null && !isLoading) {
+    setEnabled(config.enabled);
+    setWindowDays(String(config.attributionWindowDays));
+  }
 
   const loaded = enabled !== null;
   const windowNum = Math.floor(Number(windowDays));

@@ -109,33 +109,32 @@ export function useProviderSearch({
 
   // Provider states tracked outside React Query for per-provider granularity.
   const [providerStates, setProviderStates] = useState<Map<string, ProviderState>>(new Map());
-  const statesRef = useRef(providerStates);
-  statesRef.current = providerStates;
 
   // ─── Result streaming ──────────────────────────────────────────────
   // Results render as each provider resolves instead of waiting for the
   // slowest one (SearXNG via proxy can take seconds; the Nostr index
   // answers in ~100ms). The final complete set still lands in the query
   // cache as `data`.
-  const [streamed, setStreamed] = useState<SearchResult[]>([]);
+  // The stream is tagged with the key it belongs to: appends from a stale
+  // (previous) query drop themselves, and a key mismatch renders as an
+  // empty stream — no reset effect needed.
+  const [streamEntry, setStreamEntry] = useState<{ key: string; results: SearchResult[] }>(() => ({
+    key: `${query}||${source}||${privacyMode}||${languageFilter.join(',')}`,
+    results: [],
+  }));
   const streamKey = `${query}||${source}||${privacyMode}||${languageFilter.join(',')}`;
-  const streamKeyRef = useRef(streamKey);
-  if (streamKeyRef.current !== streamKey) {
-    // Query changed — reset the stream before any new appends land.
-    streamKeyRef.current = streamKey;
-    setStreamed([]);
-  }
+  const streamed = streamEntry.key === streamKey ? streamEntry.results : [];
 
   /** Append a provider's results to the visible stream (dedupe + constraints + coverage rank). */
   const appendStreamed = useCallback((key: string, fresh: SearchResult[], query: string) => {
     if (fresh.length === 0) return;
-    setStreamed((prev) => {
-      if (streamKeyRef.current !== key) return prev; // stale provider from an old query
+    setStreamEntry((prev) => {
+      if (prev.key !== key) return prev; // stale provider from an old query
       // Hard constraints (filters + NOT) apply to EVERY provider's results —
       // an engine that misunderstood site: can't leak a wrong result through.
       const constrained = applyHardConstraints(fresh, parseQuery(query));
-      const merged = deduplicateResults([...prev, ...constrained]);
-      return sortByQueryRelevance(merged, query);
+      const merged = deduplicateResults([...prev.results, ...constrained]);
+      return { key: prev.key, results: sortByQueryRelevance(merged, query) };
     });
   }, []);
 
@@ -294,12 +293,14 @@ export function useProviderSearch({
 
   // Invalidate stale queries when source changes.
   const prevSourceRef = useRef(source);
-  if (prevSourceRef.current !== source) {
-    prevSourceRef.current = source;
-    if (query.trim()) {
-      queryClient.invalidateQueries({ queryKey: ['provider-search', query, source] });
+  useEffect(() => {
+    if (prevSourceRef.current !== source) {
+      prevSourceRef.current = source;
+      if (query.trim()) {
+        queryClient.invalidateQueries({ queryKey: ['provider-search', query, source] });
+      }
     }
-  }
+  }, [source, query, queryClient]);
 
   return {
     results: allResults,

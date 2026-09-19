@@ -61,17 +61,25 @@ const Index = () => {
   // view; browser back/forward revisits earlier searches. Typing never
   // touches the URL — only submission sets it — so this can't fight input.
   const paramQuery = searchParams.get('q') || '';
-  useEffect(() => {
-    if (paramQuery === activeQuery) return;
-    setQuery(paramQuery);
-    setActiveQuery(paramQuery);
-    if (!paramQuery) {
-      // Bare home: also reset the tab to the configured default and start
-      // at the top — a fresh visit state, not a scrolled-down results page.
-      setSource(KNOWN_TAB_IDS.has(storedDefault) ? (storedDefault as SourceTabValue) : 'web');
-      window.scrollTo(0, 0);
+  // Adjusted during render (the React-docs pattern) so the synced state
+  // paints with the URL change instead of one commit later.
+  const [prevParamQuery, setPrevParamQuery] = useState(paramQuery);
+  if (paramQuery !== prevParamQuery) {
+    setPrevParamQuery(paramQuery);
+    if (paramQuery !== activeQuery) {
+      setQuery(paramQuery);
+      setActiveQuery(paramQuery);
+      if (!paramQuery) {
+        // Bare home: also reset the tab to the configured default — a fresh
+        // visit state, not a scrolled-down results page.
+        setSource(KNOWN_TAB_IDS.has(storedDefault) ? (storedDefault as SourceTabValue) : 'web');
+      }
     }
-  }, [paramQuery, activeQuery, storedDefault]);
+  }
+  // Start at the top when the search is cleared back to the hero view.
+  useEffect(() => {
+    if (!paramQuery) window.scrollTo(0, 0);
+  }, [paramQuery]);
 
   // Map SourceTabValue to provider search source.
   // 'i2p' has no provider — it shows directory links only.
@@ -126,9 +134,13 @@ const Index = () => {
   // top of the results on every page change.
   const [page, setPage] = useState(1);
   const resultsTopRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
+  // Reset to page 1 on a new query or tab — adjusted during render.
+  const pageResetKey = `${activeQuery}||${source}`;
+  const [prevPageResetKey, setPrevPageResetKey] = useState(pageResetKey);
+  if (pageResetKey !== prevPageResetKey) {
+    setPrevPageResetKey(pageResetKey);
     setPage(1);
-  }, [activeQuery, source]);
+  }
 
   const pageCount = Math.max(1, Math.ceil(totalResults / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount);
