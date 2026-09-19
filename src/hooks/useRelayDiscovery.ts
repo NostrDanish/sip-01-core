@@ -5,6 +5,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 
+import { SEARCH_RELAYS } from '@/lib/appRelays';
 import {
   getDiscoveryCache,
   isRelayDiscoveryEnabled,
@@ -22,7 +23,7 @@ export function useRelayDiscovery() {
   // when disabled, or in Privacy Mode's probe-skip path).
   useEffect(() => {
     if (!enabled) return;
-    void refreshDiscoveredRelays().then(() => setCache(getDiscoveryCache()));
+    void refreshDiscoveredRelays(false, undefined, SEARCH_RELAYS).then(() => setCache(getDiscoveryCache()));
   }, [enabled]);
 
   const setDiscovery = useCallback((on: boolean): Promise<void> => {
@@ -30,7 +31,7 @@ export function useRelayDiscovery() {
     setEnabled(on);
     if (!on) return Promise.resolve();
     setRefreshing(true);
-    return refreshDiscoveredRelays(true)
+    return refreshDiscoveredRelays(true, undefined, SEARCH_RELAYS)
       .then(() => setCache(getDiscoveryCache()))
       .finally(() => setRefreshing(false));
   }, []);
@@ -38,7 +39,7 @@ export function useRelayDiscovery() {
   const refresh = useCallback(async (): Promise<VerifiedRelay[]> => {
     setRefreshing(true);
     try {
-      const relays = await refreshDiscoveredRelays(true);
+      const relays = await refreshDiscoveredRelays(true, undefined, SEARCH_RELAYS);
       setCache(getDiscoveryCache());
       return relays;
     } finally {

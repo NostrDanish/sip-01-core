@@ -29,7 +29,7 @@
 
 import { queryRelayPool } from '@/lib/searchRelays';
 import { proxiedFetch } from '@/lib/corsProxy';
-import { SEARCH_RELAYS, normalizeRelayUrl } from '@/lib/appRelays';
+import { normalizeRelayUrl } from '@/lib/relayUrls';
 import { readStoredWithLegacy, writeStoredCanonical } from '@/lib/storageMigration';
 
 /* ------------------------------------------------------------------ */
@@ -73,8 +73,9 @@ const SEED_CANDIDATES = [
 
 /**
  * Bootstrap relays for the NIP-66 query (kind 30166). Big general-purpose
- * relays with good addressable-event coverage; the search defaults are
- * queried too (deduped).
+ * relays with good addressable-event coverage. Callers of
+ * refreshDiscoveredRelays() may pass additional bootstrap relays (e.g. the
+ * app's own search pool) — merged and deduped here.
  */
 const NIP66_BOOTSTRAP = [
   'wss://relay.nostr.band/',
@@ -149,8 +150,8 @@ export function setRelayDiscoveryEnabled(enabled: boolean): void {
  * NIP-50 (`#N: ['50']` — relays index all single-letter tags, NIP-01).
  * Returns normalized clearnet relay URLs from the `d` tags.
  */
-async function fetchNip66Candidates(signal?: AbortSignal): Promise<string[]> {
-  const bootstrap = [...new Set([...NIP66_BOOTSTRAP, ...SEARCH_RELAYS])];
+async function fetchNip66Candidates(signal?: AbortSignal, extraBootstrap: string[] = []): Promise<string[]> {
+  const bootstrap = [...new Set([...NIP66_BOOTSTRAP, ...extraBootstrap])];
   const perRelay = await queryRelayPool(
     bootstrap,
     [{ kinds: [30166], '#N': ['50'], limit: 200 }],
@@ -240,9 +241,9 @@ function isPrivacyModeOn(): boolean {
   }
 }
 
-async function runDiscovery(signal?: AbortSignal): Promise<VerifiedRelay[]> {
+async function runDiscovery(signal?: AbortSignal, extraBootstrap: string[] = []): Promise<VerifiedRelay[]> {
   // Phase 1: candidates (Nostr-tier — fine in Privacy Mode).
-  const nip66 = await fetchNip66Candidates(signal).catch(() => [] as string[]);
+  const nip66 = await fetchNip66Candidates(signal, extraBootstrap).catch(() => [] as string[]);
   const candidates = [...new Set([...SEED_CANDIDATES, ...nip66])].slice(0, MAX_CANDIDATES);
 
   // Phase 2: NIP-11 probes go through the CORS proxy — skipped entirely in
@@ -265,15 +266,22 @@ async function runDiscovery(signal?: AbortSignal): Promise<VerifiedRelay[]> {
 /**
  * Refresh the verified relay list if stale. Fire-and-forget safe; errors
  * keep the old cache. No-op while discovery is disabled.
+ *
+ * `bootstrapRelays`: extra relays to include in the NIP-66 candidate query
+ * (the host app passes its search pool; discovery itself is pool-agnostic).
  */
-export async function refreshDiscoveredRelays(force = false, signal?: AbortSignal): Promise<VerifiedRelay[]> {
+export async function refreshDiscoveredRelays(
+  force = false,
+  signal?: AbortSignal,
+  bootstrapRelays: string[] = [],
+): Promise<VerifiedRelay[]> {
   if (!isRelayDiscoveryEnabled()) return getDiscoveryCache()?.relays ?? [];
 
   const cache = getDiscoveryCache();
   if (!force && cache && Date.now() - cache.fetchedAt < DISCOVERY_TTL_MS) return cache.relays;
 
   if (!discoveryPromise) {
-    discoveryPromise = runDiscovery(signal)
+    discoveryPromise = runDiscovery(signal, bootstrapRelays)
       .then((verified) => {
         // Only overwrite the cache with a non-empty sweep — an offline
         // moment must not wipe a healthy verified list.

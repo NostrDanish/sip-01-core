@@ -13,8 +13,6 @@ import {
   INDEX_RELAYS,
   GIT_RELAYS,
   WIKI_RELAYS,
-  normalizeRelayUrl,
-  toSecureRelayUrl,
   getSearchRelayUrls,
   getCustomSearchRelays,
   addCustomSearchRelay,
@@ -27,6 +25,7 @@ import {
   getGitRelayUrls,
   getWikiRelayUrls,
 } from './appRelays';
+import { normalizeRelayUrl, toSecureRelayUrl } from './relayUrls';
 
 beforeEach(() => {
   localStorage.clear();

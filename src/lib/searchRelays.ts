@@ -1,6 +1,6 @@
 import { NRelay1, type NostrEvent, type NostrFilter } from '@nostrify/nostrify';
 
-import { toSecureRelayUrl } from '@/lib/appRelays';
+import { toSecureRelayUrl } from '@/lib/relayUrls';
 
 /** Dedicated NIP-50 search relay connections, separate from the main pool. */
 const relayCache = new Map<string, NRelay1>();

@@ -4,7 +4,7 @@ import { NostrContext } from '@nostrify/react';
 import { NUser, useNostrLogin } from '@nostrify/react/login';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAppContext } from '@/hooks/useAppContext';
-import { toSecureRelayUrl } from '@/lib/appRelays';
+import { toSecureRelayUrl } from '@/lib/relayUrls';
 
 interface NostrProviderProps {
   children: React.ReactNode;

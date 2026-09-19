@@ -8,7 +8,7 @@
 import type { NostrEvent, NostrFilter } from '@nostrify/nostrify';
 import { nip19 } from 'nostr-tools';
 
-import { getSearchRelayUrls } from '@/lib/appRelays';
+import { SEARCH_RELAYS, getSearchRelayUrls } from '@/lib/appRelays';
 import { getSearchRelay } from '@/lib/searchRelays';
 import { refreshDiscoveredRelays } from '@/lib/relayDiscovery';
 import { textOnly } from '@/lib/queryParser';
@@ -216,7 +216,7 @@ export const nostrProvider: SearchProvider = {
 
     // Kick off (or refresh) relay auto-discovery in the background —
     // verified NIP-50 / SIP-01 relays join the pools on later searches.
-    void refreshDiscoveredRelays();
+    void refreshDiscoveredRelays(false, undefined, SEARCH_RELAYS);
 
     // NIP-50 relays full-text search CONTENT — our operators (site:, AND,
     // NOT) are noise to them. Send the text residue (quoted phrases kept —
