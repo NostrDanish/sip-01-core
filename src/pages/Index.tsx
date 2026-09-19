@@ -22,7 +22,7 @@ import { QueryInsights } from '@/components/QueryInsights';
 import { Card, CardContent } from '@/components/ui/card';
 import { useProviderSearch } from '@/hooks/useProviderSearch';
 import { useInstantAnswer } from '@/hooks/useInstantAnswer';
-import { useAIAnswer } from '@/hooks/useAIAnswer';
+import { useAIAnswer } from '@/ai/hooks/useAIAnswer';
 import { useSearchHotkeys } from '@/hooks/useSearchHotkeys';
 import { ENGINE_PROFILE } from '@/lib/engine/profile';
 import { useAppContext } from '@/hooks/useAppContext';

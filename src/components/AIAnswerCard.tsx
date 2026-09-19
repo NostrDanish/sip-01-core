@@ -10,7 +10,7 @@ import { useMemo } from 'react';
 import { Sparkles, ExternalLink, AlertTriangle } from 'lucide-react';
 
 import { Skeleton } from '@/components/ui/skeleton';
-import type { AIEvidenceItem, AIAnswer } from '@/lib/ai/types';
+import type { AIEvidenceItem, AIAnswer } from '@/ai/types';
 import { sanitizeUrl } from '@/lib/sanitizeUrl';
 import { applyAffiliateRules, type AffiliateRule } from '@/lib/affiliates';
 import { useAffiliateRules } from '@/hooks/useAffiliates';

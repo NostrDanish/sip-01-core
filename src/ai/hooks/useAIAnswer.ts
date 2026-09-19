@@ -16,10 +16,10 @@ import { useQuery } from '@tanstack/react-query';
 
 import type { SearchResult } from '@/engine/providers/types';
 import { classifyQuery } from '@/engine/query/queryClassify';
-import { getAIProvider, ENGINE_PROXY_PROVIDER } from '@/lib/ai/registry';
-import { getAIConfig, resolveAIConfig } from '@/lib/aiConfig';
-import { useEngineAIStatus } from '@/hooks/useEngineAIStatus';
-import type { AIEvidenceItem, AIAnswer } from '@/lib/ai/types';
+import { getAIProvider, ENGINE_PROXY_PROVIDER } from '@/ai/registry';
+import { getAIConfig, resolveAIConfig } from '@/ai/aiConfig';
+import { useEngineAIStatus } from '@/ai/hooks/useEngineAIStatus';
+import type { AIEvidenceItem, AIAnswer } from '@/ai/types';
 
 /** Max evidence items handed to the model. */
 const MAX_EVIDENCE = 8;

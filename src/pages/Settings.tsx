@@ -41,14 +41,14 @@ import { useRelayDiscovery } from '@/hooks/useRelayDiscovery';
 import { getBraveApiKey, setBraveApiKey } from '@/engine/providers/brave';
 import { getParallelApiKey, setParallelApiKey } from '@/engine/providers/parallel';
 import { ALL_PROVIDERS } from '@/engine/providers/registry';
-import { AI_PROVIDERS, getAIProvider } from '@/lib/ai/registry';
-import { getAIConfig, hasOwnAIKey, resolveAIConfig, setAIConfig, type AIConfig } from '@/lib/aiConfig';
+import { AI_PROVIDERS, getAIProvider } from '@/ai/registry';
+import { getAIConfig, hasOwnAIKey, resolveAIConfig, setAIConfig, type AIConfig } from '@/ai/aiConfig';
 import { ENGINE_PROFILE, PPQ_INVITE_URL } from '@/lib/engine/profile';
 
 /** This engine's community free-tier model (locked on that tier). */
 const COMMUNITY_AI_MODEL = ENGINE_PROFILE.ai.community?.model ?? '';
-import { useEngineAIStatus } from '@/hooks/useEngineAIStatus';
-import type { AIModel } from '@/lib/ai/types';
+import { useEngineAIStatus } from '@/ai/hooks/useEngineAIStatus';
+import type { AIModel } from '@/ai/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   getIndexerIdentity, regenerateIndexerIdentity, exportIndexerNsec,

@@ -18,7 +18,7 @@ import { getWebEngineBases } from './enginePriority';
 import { getBraveApiKey } from './braveKey';
 import { braveLanguageParam } from '@/lib/languageFilter';
 import { toEngineQuery } from '@/engine/query/queryParser';
-import { ENGINE_AI_BASE } from '@/lib/aiConfig';
+import { ENGINE_AI_BASE } from '@/ai/aiConfig';
 
 // BYOK key storage lives in the braveKey leaf (cycle break); re-exported
 // here so existing consumers keep their import path.

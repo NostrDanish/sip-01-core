@@ -11,8 +11,8 @@
  * operator's own browser to their own deployment over TLS. It is never
  * written to localStorage, the bundle, or any public response.
  */
-import type { AdminAction, EngineAIStatus } from '@/lib/ai/engineProxy';
-import { ENGINE_AI_BASE } from '@/lib/aiConfig';
+import type { AdminAction, EngineAIStatus } from '@/ai/engineProxy';
+import { ENGINE_AI_BASE } from '@/ai/aiConfig';
 
 /** Minimal signer surface (matches Nostrify's user.signer). */
 interface EventSigner {

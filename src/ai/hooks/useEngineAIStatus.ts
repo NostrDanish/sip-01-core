@@ -9,7 +9,7 @@
  */
 import { useQuery } from '@tanstack/react-query';
 
-import { ENGINE_AI_BASE, type EngineAIStatus } from '@/lib/aiConfig';
+import { ENGINE_AI_BASE, type EngineAIStatus } from '@/ai/aiConfig';
 
 async function fetchEngineStatus(signal: AbortSignal): Promise<EngineAIStatus> {
   const res = await fetch(`${ENGINE_AI_BASE}/status`, {

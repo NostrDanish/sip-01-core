@@ -46,9 +46,9 @@ import {
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useToast } from '@/hooks/useToast';
 import { useAuthor } from '@/hooks/useAuthor';
-import { useEngineAIStatus } from '@/hooks/useEngineAIStatus';
-import { sendEngineAIAction, testEngineAI } from '@/lib/ai/engineAdmin';
-import { AI_PROVIDERS, getAIProvider } from '@/lib/ai/registry';
+import { useEngineAIStatus } from '@/ai/hooks/useEngineAIStatus';
+import { sendEngineAIAction, testEngineAI } from '@/ai/engineAdmin';
+import { AI_PROVIDERS, getAIProvider } from '@/ai/registry';
 import { useCachedQueries } from '@/hooks/useCachedQueries';
 import { useRecentIndexedDocs } from '@/hooks/useRecentIndexedDocs';
 import { useRecentStakes } from '@/hooks/useRecentStakes';

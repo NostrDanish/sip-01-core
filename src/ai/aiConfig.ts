@@ -25,12 +25,12 @@
  *   4. AI UNAVAILABLE — when the host supplies no community tier.
  */
 
-import { getAIProvider } from '@/lib/ai/registry';
-import type { EngineAIStatus } from '@/lib/ai/engineProxy';
+import { getAIProvider } from '@/ai/registry';
+import type { EngineAIStatus } from '@/ai/engineProxy';
 import { getEngineConfig } from '@/lib/engineConfig';
 import { readStoredWithLegacy, writeStoredCanonical } from '@/lib/storageMigration';
 
-export type { EngineAIStatus } from '@/lib/ai/engineProxy';
+export type { EngineAIStatus } from '@/ai/engineProxy';
 
 /**
  * Base of the engine-AI proxy (worker.ts).

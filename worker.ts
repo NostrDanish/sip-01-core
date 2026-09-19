@@ -36,7 +36,7 @@ import {
   parseAdminAction,
   applyAdminAction,
   type EngineAIEnv,
-} from './src/lib/ai/engineProxy';
+} from './src/ai/engineProxy';
 import {
   braveConfigured,
   validateBravePayload,

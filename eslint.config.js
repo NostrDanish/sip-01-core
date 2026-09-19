@@ -89,10 +89,10 @@ export default defineConfig(
     files: [
       "src/engine/providers/**/*.ts",
       "src/lib/engine/**/*.ts",
-      "src/lib/ai/**/*.ts",
+      "src/ai/**/*.ts",
       "src/engine/query/**/*.ts",
       "src/engine/votes.ts",
-      "src/lib/aiConfig.ts",
+      "src/ai/aiConfig.ts",
       "src/lib/engineConfig.ts",
       "src/federation/**/*.ts",
     ],
